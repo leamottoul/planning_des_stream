@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendrier Magique des Streams</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f3f0ff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      color: #6c4db4;
+      margin-bottom: 20px;
+    }
+
+    #edit-mode-btn {
+      background-color: #6c4db4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #edit-mode-btn:hover {
+      background-color: #5a3fb3;
+    }
+
+    .calendar {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .day {
+      background: #f3f3f3;
+      border-radius: 12px;
+      padding: 8px;
+      min-height: 70px;
+      font-weight: 600;
+      font-size: 0.9em;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .day:hover {
+      background: #e0d4ff;
+    }
+
+    .today {
+      background: #ffd54f;
+      animation: pulse 1s infinite alternate;
+      box-shadow: 0 0 10px #ffcc00;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+
+    .day.empty {
+      background: transparent;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .stream-title {
+      font-size: 0.75em;
+      font-weight: normal;
+      margin-top: 5px;
+      color: #333;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1 id="month-year">✨ Calendrier Magique des Streams – ...</h1>
+  <button id="edit-mode-btn">🔒 Modifier le planning</button>
+  <div class="calendar" id="calendar-days">
+    <!-- Cases dynamiques -->
+  </div>
+</div>
+
+<script>
+  const calendarDays = document.getElementById('calendar-days');
+  const monthYear = document.getElementById('month-year');
+  const editButton = document.getElementById('edit-mode-btn');
+  let editMode = false;
+
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  const months = [
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+  ];
+
+  const calendarKey = `streams-${year}-${month + 1}`;
+
+  function loadStreamData() {
+    const data = localStorage.getItem(calendarKey);
+    return data ? JSON.parse(data) : {};
+  }
+
+  function saveStreamData(data) {
+    localStorage.setItem(calendarKey, JSON.stringify(data));
+  }
+
+  function createCalendar(year, month) {
+    calendarDays.innerHTML = "";
+    const firstDay = new Date(year, month, 1).getDay(); // 0 = dimanche
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    const streamData = loadStreamData();
+
+    monthYear.textContent = `✨ Calendrier Magique des Streams – ${months[month]} ${year}`;
+
+    for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
+      const empty = document.createElement('div');
+      empty.classList.add('day', 'empty');
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1;
