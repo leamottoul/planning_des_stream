@@ -150,3 +150,51 @@
     }
 
     for (let day = 1;
+	    for (let day = 1; day <= daysInMonth; day++) {
+      const div = document.createElement('div');
+      div.classList.add('day');
+      div.setAttribute('data-day', day);
+
+      if (
+        day === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        div.classList.add('today');
+      }
+
+      const dayNum = document.createElement('div');
+      dayNum.textContent = day;
+
+      const title = document.createElement('div');
+      title.className = 'stream-title';
+      title.textContent = streamData[day] || "";
+
+      div.appendChild(dayNum);
+      div.appendChild(title);
+
+      div.addEventListener('click', () => {
+        if (!editMode) return;
+        const newTitle = prompt(`Quel est le stream prévu pour le ${day} ?`);
+        if (newTitle !== null) {
+          streamData[day] = newTitle;
+          saveStreamData(streamData);
+          title.textContent = newTitle;
+        }
+      });
+
+      calendarDays.appendChild(div);
+    }
+  }
+
+  editButton.addEventListener('click', () => {
+    editMode = !editMode;
+    editButton.textContent = editMode ? "✅ Fin de l'édition" : "🔒 Modifier le planning";
+  });
+
+  createCalendar(year, month);
+</script>
+
+</body>
+</html>
+
