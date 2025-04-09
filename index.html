@@ -3,51 +3,57 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendrier Magique des Streams</title>
   <style>
     body {
       margin: 0;
-      background: #f3f0ff;
       font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color, #f3f0ff);
+      color: var(--text-color, #000);
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
+      align-items: flex-start;
+      padding: 20px;
+      min-height: 100vh;
+      transition: background 0.5s, color 0.5s;
     }
 
     .container {
       background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 20px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      max-width: 600px;
+      max-width: 800px;
       width: 100%;
     }
 
     h1 {
       font-size: 1.5em;
       color: #6c4db4;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      text-align: center;
     }
 
-    #edit-mode-btn {
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .calendar-header button {
+      padding: 5px 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
       background-color: #6c4db4;
       color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 0.95em;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    #edit-mode-btn:hover {
-      background-color: #5a3fb3;
     }
 
     .calendar {
-      margin-top: 20px;
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 10px;
@@ -55,18 +61,18 @@
 
     .day {
       background: #f3f3f3;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 8px;
-      min-height: 70px;
-      font-weight: 600;
+      min-height: 80px;
       font-size: 0.9em;
-      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       cursor: pointer;
       transition: 0.3s;
+      overflow: hidden;
+      position: relative;
     }
 
     .day:hover {
@@ -74,125 +80,174 @@
     }
 
     .today {
-      background: #ffd54f;
-      animation: pulse 1s infinite alternate;
-      box-shadow: 0 0 10px #ffcc00;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.05); }
+      border: 2px solid #ffd54f;
+      box-shadow: 0 0 10px #ffecb3;
     }
 
     .day.empty {
       background: transparent;
-      box-shadow: none;
       cursor: default;
+      box-shadow: none;
     }
 
     .stream-title {
-      font-size: 0.75em;
-      font-weight: normal;
+      font-size: 0.8em;
       margin-top: 5px;
-      color: #333;
       text-align: center;
+    }
+
+    .tag-Minecraft { background: #81c784; }
+    .tag-GTA { background: #64b5f6; }
+    .tag-Chat { background: #f48fb1; }
+    .tag-Test { background: #ffb74d; }
+    .tag-Off { background: #e0e0e0; }
+
+    .tag {
+      color: white;
+      padding: 2px 6px;
+      border-radius: 6px;
+      margin-top: 5px;
+      font-size: 0.75em;
+      text-align: center;
+    }
+
+    #theme-toggle {
+      margin-left: 10px;
+      background: #444;
+    }
+
+    @media (max-width: 600px) {
+      .calendar {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1 id="month-year">✨ Calendrier Magique des Streams – ...</h1>
-  <button id="edit-mode-btn">🔒 Modifier le planning</button>
-  <div class="calendar" id="calendar-days">
-    <!-- Cases dynamiques -->
+  <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
+  <div class="calendar-header">
+    <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
+    <button id="edit-btn">🔒 Modifier le planning</button>
+    <button onclick="changeMonth(1)">Mois suivant ➡️</button>
+    <button id="theme-toggle">🌙 Thème</button>
   </div>
+  <div class="calendar" id="calendar-days"></div>
 </div>
 
 <script>
-  const calendarDays = document.getElementById('calendar-days');
-  const monthYear = document.getElementById('month-year');
-  const editButton = document.getElementById('edit-mode-btn');
+  let currentDate = new Date();
   let editMode = false;
+  let isDark = false;
+  const password = "rP5SQnuZ%QE"; // change ce mot de passe
 
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth();
+  const monthYear = document.getElementById('month-year');
+  const calendarDays = document.getElementById('calendar-days');
+  const editBtn = document.getElementById('edit-btn');
+  const themeToggle = document.getElementById('theme-toggle');
 
-  const months = [
-    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-  ];
+  const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
+    "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
-  const calendarKey = `streams-${year}-${month + 1}`;
-
-  function loadStreamData() {
-    const data = localStorage.getItem(calendarKey);
-    return data ? JSON.parse(data) : {};
+  function loadData(key) {
+    return JSON.parse(localStorage.getItem(key) || "{}");
   }
 
-  function saveStreamData(data) {
-    localStorage.setItem(calendarKey, JSON.stringify(data));
+  function saveData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
   }
 
-  function createCalendar(year, month) {
-    calendarDays.innerHTML = "";
+  function getKey(year, month) {
+    return `streams-${year}-${month + 1}`;
+  }
+
+  function createCalendar(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
-    const streamData = loadStreamData();
+    const data = loadData(getKey(year, month));
 
+    calendarDays.innerHTML = "";
     monthYear.textContent = `✨ Calendrier Magique des Streams – ${months[month]} ${year}`;
 
     for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
-      const empty = document.createElement('div');
-      empty.classList.add('day', 'empty');
-      calendarDays.appendChild(empty);
+      const div = document.createElement("div");
+      div.className = "day empty";
+      calendarDays.appendChild(div);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const div = document.createElement('div');
-      div.classList.add('day');
-      div.setAttribute('data-day', day);
+      const div = document.createElement("div");
+      div.className = "day";
+      const key = day;
 
       if (
         day === today.getDate() &&
         month === today.getMonth() &&
         year === today.getFullYear()
       ) {
-        div.classList.add('today');
+        div.classList.add("today");
       }
 
-      const dayNum = document.createElement('div');
-      dayNum.textContent = day;
+      const num = document.createElement("div");
+      num.textContent = day;
+      div.appendChild(num);
 
-      const title = document.createElement('div');
-      title.className = 'stream-title';
-      title.textContent = streamData[day] || "";
+      const stream = data[key];
+      if (stream) {
+        const title = document.createElement("div");
+        title.className = "stream-title";
+        title.textContent = stream.name;
+        div.appendChild(title);
 
-      div.appendChild(dayNum);
-      div.appendChild(title);
+        const tag = document.createElement("div");
+        tag.className = `tag tag-${stream.type}`;
+        tag.textContent = stream.type;
+        div.appendChild(tag);
+      }
 
-      div.addEventListener('click', () => {
+      div.addEventListener("click", () => {
         if (!editMode) return;
-        const newTitle = prompt(`Quel est le stream prévu pour le ${day} ?`);
-        if (newTitle !== null) {
-          streamData[day] = newTitle;
-          saveStreamData(streamData);
-          title.textContent = newTitle;
-        }
+        const name = prompt("Titre du stream :");
+        if (name === null) return;
+        const type = prompt("Type (Minecraft, GTA, Chat, Test, Off) :");
+        if (type === null) return;
+
+        data[key] = { name, type };
+        saveData(getKey(year, month), data);
+        createCalendar(currentDate);
       });
 
       calendarDays.appendChild(div);
     }
   }
 
-  editButton.addEventListener('click', () => {
-    editMode = !editMode;
-    editButton.textContent = editMode ? "✅ Fin de l'édition" : "🔒 Modifier le planning";
+  function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    createCalendar(currentDate);
+  }
+
+  editBtn.addEventListener("click", () => {
+    const userPass = prompt("Mot de passe ?");
+    if (userPass === password) {
+      editMode = !editMode;
+      editBtn.textContent = editMode ? "✅ Fin de l'édition" : "🔒 Modifier le planning";
+    } else {
+      alert("Mot de passe incorrect !");
+    }
   });
 
-  createCalendar(year, month);
+  themeToggle.addEventListener("click", () => {
+    isDark = !isDark;
+    document.documentElement.style.setProperty("--bg-color", isDark ? "#222" : "#f3f0ff");
+    document.documentElement.style.setProperty("--text-color", isDark ? "#fff" : "#000");
+    themeToggle.textContent = isDark ? "☀️ Thème" : "🌙 Thème";
+  });
+
+  createCalendar(currentDate);
 </script>
 
 </body>
