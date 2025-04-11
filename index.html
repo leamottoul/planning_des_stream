@@ -1,24 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendrier Magique des Streams</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-color, #f3f0ff);
-      color: var(--text-color, #000);
+      margin: 0;
+      background: #f3f0ff;
+      color: #222;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 20px;
-      min-height: 100vh;
-      transition: background 0.5s, color 0.5s;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
     }
-
     .container {
       background: white;
       padding: 20px;
@@ -27,128 +23,178 @@
       max-width: 800px;
       width: 100%;
     }
-
     h1 {
-      font-size: 1.5em;
-      color: #6c4db4;
-      margin-bottom: 10px;
       text-align: center;
+      color: #6c4db4;
     }
-
     .calendar-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
-
     .calendar-header button {
-      padding: 5px 12px;
-      font-size: 1em;
+      padding: 8px 12px;
+      background: #6c4db4;
       border: none;
       border-radius: 8px;
-      background-color: #6c4db4;
       color: white;
       cursor: pointer;
     }
-
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 10px;
+      gap: 8px;
     }
-
     .day {
       background: #f3f3f3;
       border-radius: 10px;
       padding: 8px;
       min-height: 80px;
-      font-size: 0.9em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+      text-align: center;
       cursor: pointer;
       transition: 0.3s;
-      overflow: hidden;
       position: relative;
     }
-
-    .day:hover {
-      background: #e0d4ff;
-    }
-
-    .today {
+    .day.today {
       border: 2px solid #ffd54f;
       box-shadow: 0 0 10px #ffecb3;
+      animation: pulse 1s infinite alternate;
     }
-
-    .day.empty {
-      background: transparent;
-      cursor: default;
-      box-shadow: none;
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
     }
-
-    .stream-title {
+    .stream-info {
       font-size: 0.8em;
-      margin-top: 5px;
-      text-align: center;
-    }
-
-    .tag-Minecraft { background: #81c784; }
-    .tag-GTA { background: #64b5f6; }
-    .tag-Chat { background: #f48fb1; }
-    .tag-Test { background: #ffb74d; }
-    .tag-Off { background: #e0e0e0; }
-
-    .tag {
-      color: white;
-      padding: 2px 6px;
+      margin-top: 6px;
+      padding: 2px 4px;
       border-radius: 6px;
-      margin-top: 5px;
-      font-size: 0.75em;
-      text-align: center;
+      color: white;
     }
-
-    #theme-toggle {
-      margin-left: 10px;
-      background: #444;
+    .Minecraft { background-color: #81c784; }
+    .GTA { background-color: #64b5f6; }
+    .Chat { background-color: #f48fb1; }
+    .Test { background-color: #ffb74d; }
+    .Off { background-color: #ccc; color: #333; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadein 0.3s ease;
     }
-
-    @media (max-width: 600px) {
-      .calendar {
-        grid-template-columns: repeat(4, 1fr);
-      }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      animation: appear 0.4s ease;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes appear {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      color: #aaa;
+    }
+    .close-btn:hover {
+      color: #444;
+    }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #6c4db4;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      display: none;
     }
   </style>
 </head>
 <body>
-
+<!-- Le code complet du calendrier magique est maintenant inséré dans ce document. Tu peux continuer à l’éditer ici. -->
 <div class="container">
   <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
   <div class="calendar-header">
     <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
-    <button id="edit-btn">🔒 Modifier le planning</button>
+    <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
     <button onclick="changeMonth(1)">Mois suivant ➡️</button>
-    <button id="theme-toggle">🌙 Thème</button>
   </div>
   <div class="calendar" id="calendar-days"></div>
 </div>
 
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('loginModal')">❌</span>
+    <h2 id="authTitle">Connexion</h2>
+    <input type="text" id="loginUser" placeholder="Nom d'utilisateur" />
+    <input type="password" id="loginPass" placeholder="Code sécurisé" />
+    <button onclick="validateLogin()">✅ Valider</button>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('editModal')">❌</span>
+    <h2>Modifier le jour</h2>
+    <input type="text" id="title" placeholder="Titre du stream" />
+    <select id="type">
+      <option value="Minecraft">Minecraft</option>
+      <option value="GTA">GTA RP</option>
+      <option value="Chat">Just Chatting</option>
+      <option value="Test">Test/Setup</option>
+      <option value="Off">Off/Pause</option>
+    </select>
+    <select id="hour">
+      <option value="10h00">10h00</option>
+      <option value="14h30">14h30</option>
+      <option value="18h00">18h00</option>
+      <option value="20h00">20h00</option>
+      <option value="22h00">22h00</option>
+    </select>
+    <button onclick="saveEdit()">💾 Enregistrer</button>
+    <button onclick="deleteDay()">🗑️ Supprimer</button>
+  </div>
+</div>
+
+<div class="notification" id="notification"></div>
+
 <script>
+  const users = { "leamc": "mdp2025", "admin": "magicpass" };
+  let editUnlocked = false;
+  let failedAttempts = 0;
+  let lockoutUntil = null;
   let currentDate = new Date();
-  let editMode = false;
-  let isDark = false;
-  const password = "rP5SQnuZ%QE"; // change ce mot de passe
+  let selectedDay = null;
 
-  const monthYear = document.getElementById('month-year');
-  const calendarDays = document.getElementById('calendar-days');
-  const editBtn = document.getElementById('edit-btn');
-  const themeToggle = document.getElementById('theme-toggle');
+  function showNotification(msg) {
+    const notif = document.getElementById("notification");
+    notif.textContent = msg;
+    notif.style.display = "block";
+    setTimeout(() => notif.style.display = "none", 4000);
+  }
 
-  const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
-    "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+  function getKey(year, month) {
+    return `streams-${year}-${month + 1}`;
+  }
 
   function loadData(key) {
     return JSON.parse(localStorage.getItem(key) || "{}");
@@ -158,10 +204,6 @@
     localStorage.setItem(key, JSON.stringify(data));
   }
 
-  function getKey(year, month) {
-    return `streams-${year}-${month + 1}`;
-  }
-
   function createCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -169,59 +211,46 @@
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
     const data = loadData(getKey(year, month));
+    const container = document.getElementById("calendar-days");
 
-    calendarDays.innerHTML = "";
-    monthYear.textContent = `✨ Calendrier Magique des Streams – ${months[month]} ${year}`;
+    container.innerHTML = "";
+    document.getElementById("month-year").textContent =
+      `✨ Calendrier Magique des Streams – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
 
     for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
-      const div = document.createElement("div");
-      div.className = "day empty";
-      calendarDays.appendChild(div);
+      const empty = document.createElement("div");
+      empty.className = "day empty";
+      container.appendChild(empty);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
       const div = document.createElement("div");
       div.className = "day";
-      const key = day;
+      div.dataset.day = day;
+      div.innerHTML = `<strong>${day}</strong>`;
 
-      if (
-        day === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear()
-      ) {
+      if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
         div.classList.add("today");
       }
 
-      const num = document.createElement("div");
-      num.textContent = day;
-      div.appendChild(num);
-
-      const stream = data[key];
-      if (stream) {
-        const title = document.createElement("div");
-        title.className = "stream-title";
-        title.textContent = stream.name;
-        div.appendChild(title);
-
-        const tag = document.createElement("div");
-        tag.className = `tag tag-${stream.type}`;
-        tag.textContent = stream.type;
-        div.appendChild(tag);
+      if (data[day]) {
+        const info = document.createElement("div");
+        info.className = `stream-info ${data[day].type}`;
+        info.innerHTML = `${data[day].title}<br><small>${data[day].type} à ${data[day].hour}</small>`;
+        div.appendChild(info);
       }
 
-      div.addEventListener("click", () => {
-        if (!editMode) return;
-        const name = prompt("Titre du stream :");
-        if (name === null) return;
-        const type = prompt("Type (Minecraft, GTA, Chat, Test, Off) :");
-        if (type === null) return;
+      div.onclick = () => {
+        if (!editUnlocked) return;
+        selectedDay = day;
+        openModal('editModal');
+        const d = loadData(getKey(year, month))[day] || {};
+        document.getElementById("title").value = d.title || "";
+        document.getElementById("type").value = d.type || "Minecraft";
+        document.getElementById("hour").value = d.hour || "20h00";
+      };
 
-        data[key] = { name, type };
-        saveData(getKey(year, month), data);
-        createCalendar(currentDate);
-      });
-
-      calendarDays.appendChild(div);
+      container.appendChild(div);
     }
   }
 
@@ -230,25 +259,71 @@
     createCalendar(currentDate);
   }
 
-  editBtn.addEventListener("click", () => {
-    const userPass = prompt("Mot de passe ?");
-    if (userPass === password) {
-      editMode = !editMode;
-      editBtn.textContent = editMode ? "✅ Fin de l'édition" : "🔒 Modifier le planning";
-    } else {
-      alert("Mot de passe incorrect !");
-    }
-  });
+  function openModal(id) {
+    document.getElementById(id).style.display = "flex";
+  }
 
-  themeToggle.addEventListener("click", () => {
-    isDark = !isDark;
-    document.documentElement.style.setProperty("--bg-color", isDark ? "#222" : "#f3f0ff");
-    document.documentElement.style.setProperty("--text-color", isDark ? "#fff" : "#000");
-    themeToggle.textContent = isDark ? "☀️ Thème" : "🌙 Thème";
-  });
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  function handleAuth() {
+    document.getElementById("authTitle").textContent = editUnlocked ? "Déconnexion" : "Connexion";
+    openModal("loginModal");
+  }
+
+  function validateLogin() {
+    const user = document.getElementById("loginUser").value.trim();
+    const pass = document.getElementById("loginPass").value.trim();
+
+    if (users[user] && users[user] === pass) {
+      closeModal("loginModal");
+      if (!editUnlocked) {
+        editUnlocked = true;
+        document.getElementById("authBtn").textContent = "🚪 Déconnexion";
+        showNotification("🔓 Accès au planning magique débloqué !");
+      } else {
+        editUnlocked = false;
+        document.getElementById("authBtn").textContent = "🔒 Modifier le planning";
+        showNotification("🌙 Tu es maintenant déconnectée du planning magique. À bientôt Léa !");
+      }
+      failedAttempts = 0;
+    } else {
+      failedAttempts++;
+      if (failedAttempts >= 3) {
+        lockoutUntil = Date.now() + 10 * 60 * 1000;
+        alert("Trop de tentatives ! Réessaie dans 10 minutes.");
+        closeModal("loginModal");
+      } else {
+        alert("Identifiants incorrects !");
+      }
+    }
+  }
+
+  function saveEdit() {
+    if (selectedDay === null) return;
+    const title = document.getElementById("title").value.trim();
+    const type = document.getElementById("type").value;
+    const hour = document.getElementById("hour").value;
+    const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
+    const data = loadData(key);
+    data[selectedDay] = { title, type, hour };
+    saveData(key, data);
+    closeModal("editModal");
+    createCalendar(currentDate);
+  }
+
+  function deleteDay() {
+    if (selectedDay === null) return;
+    const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
+    const data = loadData(key);
+    delete data[selectedDay];
+    saveData(key, data);
+    closeModal("editModal");
+    createCalendar(currentDate);
+  }
 
   createCalendar(currentDate);
 </script>
-
 </body>
 </html>
