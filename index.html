@@ -143,19 +143,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const calendarContainer = document.createElement('div');
-    calendarContainer.innerHTML = `
-      <div class="container">
-        <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
-        <div class="calendar-header">
-          <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
-          <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
-          <button onclick="changeMonth(1)">Mois suivant ➡️</button>
-        </div>
-        <div class="calendar" id="calendar-days"></div>
-      </div>
-    `;
-    document.body.appendChild(calendarContainer);
+    
 
     window.editUnlocked = false;
     window.failedAttempts = 0;
@@ -288,6 +276,15 @@
   </script>
 </head>
 <body>
+  <div class="container">
+    <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
+    <div class="calendar-header">
+      <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
+      <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
+      <button onclick="changeMonth(1)">Mois suivant ➡️</button>
+    </div>
+    <div class="calendar" id="calendar-days"></div>
+  </div>
 <!-- Le contenu HTML est géré dynamiquement via JavaScript Firebase Firestore -->
 <div class="modal" id="loginModal" style="display:none">
   <div class="modal-content">
