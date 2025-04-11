@@ -4,158 +4,170 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendrier Magique des Streams</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background: #f3f0ff;
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-      max-width: 800px;
-      width: 100%;
-    }
-    h1 {
-      text-align: center;
-      color: #6c4db4;
-    }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .calendar-header button {
-      padding: 8px 12px;
-      background: #6c4db4;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-    }
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-    .day {
-      background: #f3f3f3;
-      border-radius: 10px;
-      padding: 8px;
-      min-height: 80px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s;
-      position: relative;
-    }
-    .day.today {
-      border: 2px solid #ffd54f;
-      box-shadow: 0 0 10px #ffecb3;
-      animation: pulse 1s infinite alternate;
-    }
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
-    .stream-info {
-      font-size: 0.8em;
-      margin-top: 6px;
-      padding: 2px 4px;
-      border-radius: 6px;
-      color: white;
-    }
-    .Minecraft { background-color: #81c784; }
-    .GTA { background-color: #64b5f6; }
-    .Chat { background-color: #f48fb1; }
-    .Test { background-color: #ffb74d; }
-    .Off { background-color: #ccc; color: #333; }
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      animation: fadein 0.3s ease;
-    }
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 400px;
-      position: relative;
-      animation: appear 0.4s ease;
-    }
-    @keyframes fadein {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes appear {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    .close-btn {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      cursor: pointer;
-      font-size: 1.2em;
-      color: #aaa;
-    }
-    .close-btn:hover {
-      color: #444;
-    }
-    .notification {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #6c4db4;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 12px;
-      display: none;
-    }
-  </style>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyBI0e7UVfPb9_HimzEsqUF24PiJjuMO6WY",
-    authDomain: "planning-twitch-leatvlive.firebaseapp.com",
-    projectId: "planning-twitch-leatvlive",
-    storageBucket: "planning-twitch-leatvlive.firebasestorage.app",
-    messagingSenderId: "975502573700",
-    appId: "1:975502573700:web:a9c88741a6b476367d82d1",
-    measurementId: "G-TK7SY4TDSV"
-  };
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, deleteField, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBI0e7UVfPb9_HimzEsqUF24PiJjuMO6WY",
+      authDomain: "planning-twitch-leatvlive.firebaseapp.com",
+      projectId: "planning-twitch-leatvlive",
+      storageBucket: "planning-twitch-leatvlive.firebasestorage.app",
+      messagingSenderId: "975502573700",
+      appId: "1:975502573700:web:a9c88741a6b476367d82d1",
+      measurementId: "G-TK7SY4TDSV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const calendarContainer = document.createElement('div');
+    calendarContainer.innerHTML = `
+      <div class="container">
+        <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
+        <div class="calendar-header">
+          <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
+          <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
+          <button onclick="changeMonth(1)">Mois suivant ➡️</button>
+        </div>
+        <div class="calendar" id="calendar-days"></div>
+      </div>
+    `;
+    document.body.appendChild(calendarContainer);
+
+    window.editUnlocked = false;
+    window.failedAttempts = 0;
+    window.lockoutUntil = null;
+    window.currentDate = new Date();
+    window.selectedDay = null;
+
+    const users = { "leamc": "mdp2025" };
+
+    window.getKey = (year, month) => `${year}-${month + 1}`;
+
+    window.loadData = async (key) => {
+      const ref = doc(db, "plannings", key);
+      const snap = await getDoc(ref);
+      return snap.exists() ? snap.data() : {};
+    };
+
+    window.saveData = async (key, data) => {
+      const ref = doc(db, "plannings", key);
+      await setDoc(ref, data);
+    };
+
+    window.deleteDay = async () => {
+      const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
+      const ref = doc(db, "plannings", key);
+      await updateDoc(ref, { [selectedDay]: deleteField() });
+      closeModal("editModal");
+      createCalendar(currentDate);
+    };
+
+    window.saveEdit = async () => {
+      if (selectedDay === null) return;
+      const title = document.getElementById("title").value.trim();
+      const type = document.getElementById("type").value;
+      const hour = document.getElementById("hour").value;
+      const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
+      const data = await loadData(key);
+      data[selectedDay] = { title, type, hour };
+      await saveData(key, data);
+      closeModal("editModal");
+      createCalendar(currentDate);
+    };
+
+    window.createCalendar = async (date) => {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+      const data = await loadData(getKey(year, month));
+      const container = document.getElementById("calendar-days");
+
+      container.innerHTML = "";
+      document.getElementById("month-year").textContent =
+        `✨ Calendrier Magique des Streams – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
+
+      for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        container.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const div = document.createElement("div");
+        div.className = "day";
+        div.dataset.day = day;
+        div.innerHTML = `<strong>${day}</strong>`;
+
+        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+          div.classList.add("today");
+        }
+
+        if (data[day]) {
+          const info = document.createElement("div");
+          info.className = `stream-info ${data[day].type}`;
+          info.innerHTML = `${data[day].title}<br><small>${data[day].type} à ${data[day].hour}</small>`;
+          div.appendChild(info);
+        }
+
+        div.onclick = () => {
+          if (!editUnlocked) return;
+          selectedDay = day;
+          openModal('editModal');
+          const d = data[day] || {};
+          document.getElementById("title").value = d.title || "";
+          document.getElementById("type").value = d.type || "Minecraft";
+          document.getElementById("hour").value = d.hour || "20h00";
+        };
+
+        container.appendChild(div);
+      }
+    };
+
+    window.changeMonth = (delta) => {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      createCalendar(currentDate);
+    };
+
+    window.handleAuth = () => {
+      document.getElementById("authTitle").textContent = editUnlocked ? "Déconnexion" : "Connexion";
+      openModal("loginModal");
+    };
+
+    window.validateLogin = () => {
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
+
+      if (users[user] && users[user] === pass) {
+        closeModal("loginModal");
+        editUnlocked = !editUnlocked;
+        document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
+        alert(editUnlocked ? "🔓 Accès débloqué !" : "🌙 Déconnectée. À bientôt Léa !");
+        failedAttempts = 0;
+      } else {
+        failedAttempts++;
+        if (failedAttempts >= 3) {
+          lockoutUntil = Date.now() + 10 * 60 * 1000;
+          alert("Trop de tentatives ! Réessaie dans 10 minutes.");
+          closeModal("loginModal");
+        } else {
+          alert("Identifiants incorrects !");
+        }
+      }
+    };
+
+    window.openModal = (id) => document.getElementById(id).style.display = "flex";
+    window.closeModal = (id) => document.getElementById(id).style.display = "none";
+
+    window.onload = () => createCalendar(currentDate);
+  </script>
 </head>
 <body>
-<!-- Le code complet du calendrier magique est maintenant inséré dans ce document. Tu peux continuer à l’éditer ici. -->
-<div class="container">
-  <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
-  <div class="calendar-header">
-    <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
-    <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
-    <button onclick="changeMonth(1)">Mois suivant ➡️</button>
-  </div>
-  <div class="calendar" id="calendar-days"></div>
-</div>
-
-<!-- Login Modal -->
-<div class="modal" id="loginModal">
+<!-- Le contenu HTML est géré dynamiquement via JavaScript Firebase Firestore -->
+<div class="modal" id="loginModal" style="display:none">
   <div class="modal-content">
     <span class="close-btn" onclick="closeModal('loginModal')">❌</span>
     <h2 id="authTitle">Connexion</h2>
@@ -164,9 +176,7 @@
     <button onclick="validateLogin()">✅ Valider</button>
   </div>
 </div>
-
-<!-- Edit Modal -->
-<div class="modal" id="editModal">
+<div class="modal" id="editModal" style="display:none">
   <div class="modal-content">
     <span class="close-btn" onclick="closeModal('editModal')">❌</span>
     <h2>Modifier le jour</h2>
@@ -189,156 +199,5 @@
     <button onclick="deleteDay()">🗑️ Supprimer</button>
   </div>
 </div>
-
-<div class="notification" id="notification"></div>
-
-<script>
-  const users = { "leamc": "mdp2025", "admin": "magicpass" };
-  let editUnlocked = false;
-  let failedAttempts = 0;
-  let lockoutUntil = null;
-  let currentDate = new Date();
-  let selectedDay = null;
-
-  function showNotification(msg) {
-    const notif = document.getElementById("notification");
-    notif.textContent = msg;
-    notif.style.display = "block";
-    setTimeout(() => notif.style.display = "none", 4000);
-  }
-
-  function getKey(year, month) {
-    return `streams-${year}-${month + 1}`;
-  }
-
-  function loadData(key) {
-    return JSON.parse(localStorage.getItem(key) || "{}");
-  }
-
-  function saveData(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-  }
-
-  function createCalendar(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    const data = loadData(getKey(year, month));
-    const container = document.getElementById("calendar-days");
-
-    container.innerHTML = "";
-    document.getElementById("month-year").textContent =
-      `✨ Calendrier Magique des Streams – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
-
-    for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
-      const empty = document.createElement("div");
-      empty.className = "day empty";
-      container.appendChild(empty);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const div = document.createElement("div");
-      div.className = "day";
-      div.dataset.day = day;
-      div.innerHTML = `<strong>${day}</strong>`;
-
-      if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-        div.classList.add("today");
-      }
-
-      if (data[day]) {
-        const info = document.createElement("div");
-        info.className = `stream-info ${data[day].type}`;
-        info.innerHTML = `${data[day].title}<br><small>${data[day].type} à ${data[day].hour}</small>`;
-        div.appendChild(info);
-      }
-
-      div.onclick = () => {
-        if (!editUnlocked) return;
-        selectedDay = day;
-        openModal('editModal');
-        const d = loadData(getKey(year, month))[day] || {};
-        document.getElementById("title").value = d.title || "";
-        document.getElementById("type").value = d.type || "Minecraft";
-        document.getElementById("hour").value = d.hour || "20h00";
-      };
-
-      container.appendChild(div);
-    }
-  }
-
-  function changeMonth(delta) {
-    currentDate.setMonth(currentDate.getMonth() + delta);
-    createCalendar(currentDate);
-  }
-
-  function openModal(id) {
-    document.getElementById(id).style.display = "flex";
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).style.display = "none";
-  }
-
-  function handleAuth() {
-    document.getElementById("authTitle").textContent = editUnlocked ? "Déconnexion" : "Connexion";
-    openModal("loginModal");
-  }
-
-  function validateLogin() {
-    const user = document.getElementById("loginUser").value.trim();
-    const pass = document.getElementById("loginPass").value.trim();
-
-    if (users[user] && users[user] === pass) {
-      closeModal("loginModal");
-      if (!editUnlocked) {
-        editUnlocked = true;
-        document.getElementById("authBtn").textContent = "🚪 Déconnexion";
-        showNotification("🔓 Accès au planning magique débloqué !");
-      } else {
-        editUnlocked = false;
-        document.getElementById("authBtn").textContent = "🔒 Modifier le planning";
-        showNotification("🌙 Tu es maintenant déconnectée du planning magique. À bientôt Léa !");
-      }
-      failedAttempts = 0;
-    } else {
-      failedAttempts++;
-      if (failedAttempts >= 3) {
-        lockoutUntil = Date.now() + 10 * 60 * 1000;
-        alert("Trop de tentatives ! Réessaie dans 10 minutes.");
-        closeModal("loginModal");
-      } else {
-        alert("Identifiants incorrects !");
-      }
-    }
-  }
-
-  function saveEdit() {
-    if (selectedDay === null) return;
-    const title = document.getElementById("title").value.trim();
-    const type = document.getElementById("type").value;
-    const hour = document.getElementById("hour").value;
-    const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
-    const data = loadData(key);
-    data[selectedDay] = { title, type, hour };
-    saveData(key, data);
-    closeModal("editModal");
-    createCalendar(currentDate);
-  }
-
-  function deleteDay() {
-    if (selectedDay === null) return;
-    const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
-    const data = loadData(key);
-    delete data[selectedDay];
-    saveData(key, data);
-    closeModal("editModal");
-    createCalendar(currentDate);
-  }
-
-  createCalendar(currentDate);
-</script>
 </body>
 </html>
