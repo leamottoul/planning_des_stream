@@ -225,7 +225,7 @@ function checkSecretWord() {
   // 👤 Identifiants utilisateurs pour l'accès édition
   const users = {
     "leamc": "mdp2025"
-  };
+  });
 </script>
 <!-- 🛠️ FIN SECTION MODIFIABLE -->
 
@@ -426,12 +426,18 @@ window.addEventListener("DOMContentLoaded", () => {
   if (triesLeft === "0") {
     document.getElementById("secretInput").disabled = true;
   }
-  createCalendar(currentDate);
+  if (typeof db !== 'undefined') {
+    createCalendar(currentDate);
+  } else {
+    console.error("Firebase n'est pas chargé correctement.");
+  }
   setTimeout(() => {
     const welcome = document.getElementById("welcome-message");
     if (welcome) {
       welcome.style.transition = "opacity 0.5s ease";
-      setTimeout(() => welcome.style.opacity = "0", 5000);
+      setTimeout(() => {
+      if (welcome) welcome.style.opacity = "0";
+    }, 5000);
     }
   }, 500);
 };
