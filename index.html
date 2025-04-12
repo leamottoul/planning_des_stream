@@ -421,7 +421,7 @@ function closeModal(id) {
   document.getElementById(id).style.display = "none";
 }
 
-window.onload = () => {
+window.addEventListener("DOMContentLoaded", () => {
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
   if (triesLeft === "0") {
     document.getElementById("secretInput").disabled = true;
