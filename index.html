@@ -169,12 +169,12 @@ function toggleTheme() {
   if (isDark) {
     body.style.background = "linear-gradient(135deg, #1a1a2e, #16213e)";
     body.style.color = "#fff";
-    document.querySelectorAll('.day strong').forEach(el => el.style.color = '#fff');
+    // Ne plus modifier la couleur des numéros des jours (on garde en noir)
     if (container) container.style.background = "#292a3e";
   } else {
     body.style.background = "#f3f0ff";
     body.style.color = "#222";
-    document.querySelectorAll('.day strong').forEach(el => el.style.color = '#000');
+    // Ne plus modifier la couleur des numéros des jours (on garde en noir)
     if (container) container.style.background = "#ffffff";
   }
 }
@@ -339,7 +339,7 @@ async function createCalendar(date) {
     const div = document.createElement("div");
     div.className = "day";
     div.dataset.day = day;
-    div.innerHTML = `<strong style='color: inherit;'>${day}</strong>`;
+    div.innerHTML = `<strong style='color: #000;'>${day}</strong>`;
 
     if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
       div.classList.add("today");
@@ -461,3 +461,4 @@ window.onload = () => {
 </script>
 </body>
 </html>
+
