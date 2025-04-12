@@ -156,7 +156,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendrier Magique des Streams</title>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js">function toggleTheme() {
+  const body = document.body;
+  const isDark = body.classList.toggle("dark-theme");
+  if (isDark) {
+    body.style.background = "linear-gradient(135deg, #1a1a2e, #16213e)";
+    body.style.color = "#fff";
+  } else {
+    body.style.background = "#f3f0ff";
+    body.style.color = "#222";
+  }
+}
+
+function checkSecretWord() {
+  const input = document.getElementById("secretInput").value.trim().toLowerCase();
+  const correct = document.getElementById("secretHint").getAttribute("data-secret");
+  let tries = parseInt(localStorage.getItem("triesLeft") ?? "3");
+  if (input === correct) {
+    alert("🎉 Surprise activée ! Tu as trouvé le mot magique.");
+    document.getElementById("secretInput").disabled = true;
+  } else {
+    tries--;
+    localStorage.setItem("triesLeft", tries);
+    if (tries <= 0) {
+      document.getElementById("secretInput").disabled = true;
+      alert("😢 Tu as utilisé tous tes essais pour aujourd’hui.");
+    } else {
+      alert(`❌ Mauvais mot. Il te reste ${tries} essais aujourd’hui.`);
+    }
+  }
+}
+</script>
 <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
 <script>
   const firebaseConfig = {
@@ -182,7 +212,15 @@
       <button onclick="changeMonth(1)">Mois suivant ➡️</button>
     </div>
     <div class="calendar" id="calendar-days"></div>
-  </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+      <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">🎨 Mode Sombre / Clair</button>
+      <br><br>
+      <input id="secretInput" type="text" placeholder="Entre le mot magique" style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
+      <button onclick="checkSecretWord()" style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">✨ Valider</button>
+      <div id="secretHint" data-secret="magic" style="display:none;"></div>
+    </div>
+
 <!-- Le contenu HTML est géré dynamiquement via JavaScript Firebase Firestore -->
 <div class="modal" id="loginModal" style="display:none">
   <div class="modal-content">
@@ -351,6 +389,10 @@ function closeModal(id) {
 }
 
 window.onload = () => {
+  const triesLeft = localStorage.getItem("triesLeft") ?? 3;
+  if (triesLeft === "0") {
+    document.getElementById("secretInput").disabled = true;
+  }
   createCalendar(currentDate);
   setTimeout(() => {
     const welcome = document.getElementById("welcome-message");
@@ -401,3 +443,4 @@ window.onload = () => {
 </script>
 </body>
 </html>
+
