@@ -126,154 +126,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendrier Magique des Streams</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, deleteField, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBI0e7UVfPb9_HimzEsqUF24PiJjuMO6WY",
-      authDomain: "planning-twitch-leatvlive.firebaseapp.com",
-      projectId: "planning-twitch-leatvlive",
-      storageBucket: "planning-twitch-leatvlive.firebasestorage.app",
-      messagingSenderId: "975502573700",
-      appId: "1:975502573700:web:a9c88741a6b476367d82d1",
-      measurementId: "G-TK7SY4TDSV"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    
-
-    window.editUnlocked = false;
-    window.failedAttempts = 0;
-    window.lockoutUntil = null;
-    window.currentDate = new Date();
-    window.selectedDay = null;
-
-    const users = { "leamc": "mdp2025" };
-
-    window.getKey = (year, month) => `${year}-${month + 1}`;
-
-    window.loadData = async (key) => {
-      const ref = doc(db, "plannings", key);
-      const snap = await getDoc(ref);
-      return snap.exists() ? snap.data() : {};
-    };
-
-    window.saveData = async (key, data) => {
-      const ref = doc(db, "plannings", key);
-      await setDoc(ref, data);
-    };
-
-    window.deleteDay = async () => {
-      const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
-      const ref = doc(db, "plannings", key);
-      await updateDoc(ref, { [selectedDay]: deleteField() });
-      closeModal("editModal");
-      createCalendar(currentDate);
-    };
-
-    window.saveEdit = async () => {
-      if (selectedDay === null) return;
-      const title = document.getElementById("title").value.trim();
-      const type = document.getElementById("type").value;
-      const hour = document.getElementById("hour").value;
-      const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
-      const data = await loadData(key);
-      data[selectedDay] = { title, type, hour };
-      await saveData(key, data);
-      closeModal("editModal");
-      createCalendar(currentDate);
-    };
-
-    window.createCalendar = async (date) => {
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const today = new Date();
-      const data = await loadData(getKey(year, month));
-      const container = document.getElementById("calendar-days");
-
-      container.innerHTML = "";
-      document.getElementById("month-year").textContent =
-        `✨ Calendrier Magique des Streams – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
-
-      for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
-        const empty = document.createElement("div");
-        empty.className = "day empty";
-        container.appendChild(empty);
-      }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const div = document.createElement("div");
-        div.className = "day";
-        div.dataset.day = day;
-        div.innerHTML = `<strong>${day}</strong>`;
-
-        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-          div.classList.add("today");
-        }
-
-        if (data[day]) {
-          const info = document.createElement("div");
-          info.className = `stream-info ${data[day].type}`;
-          info.innerHTML = `${data[day].title}<br><small>${data[day].type} à ${data[day].hour}</small>`;
-          div.appendChild(info);
-        }
-
-        div.onclick = () => {
-          if (!editUnlocked) return;
-          selectedDay = day;
-          openModal('editModal');
-          const d = data[day] || {};
-          document.getElementById("title").value = d.title || "";
-          document.getElementById("type").value = d.type || "Minecraft";
-          document.getElementById("hour").value = d.hour || "20h00";
-        };
-
-        container.appendChild(div);
-      }
-    };
-
-    window.changeMonth = (delta) => {
-      currentDate.setMonth(currentDate.getMonth() + delta);
-      createCalendar(currentDate);
-    };
-
-    window.handleAuth = () => {
-      document.getElementById("authTitle").textContent = editUnlocked ? "Déconnexion" : "Connexion";
-      openModal("loginModal");
-    };
-
-    window.validateLogin = () => {
-      const user = document.getElementById("loginUser").value.trim();
-      const pass = document.getElementById("loginPass").value.trim();
-
-      if (users[user] && users[user] === pass) {
-        closeModal("loginModal");
-        editUnlocked = !editUnlocked;
-        document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
-        alert(editUnlocked ? "🔓 Accès débloqué !" : "🌙 Déconnectée. À bientôt Léa !");
-        failedAttempts = 0;
-      } else {
-        failedAttempts++;
-        if (failedAttempts >= 3) {
-          lockoutUntil = Date.now() + 10 * 60 * 1000;
-          alert("Trop de tentatives ! Réessaie dans 10 minutes.");
-          closeModal("loginModal");
-        } else {
-          alert("Identifiants incorrects !");
-        }
-      }
-    };
-
-    window.openModal = (id) => document.getElementById(id).style.display = "flex";
-    window.closeModal = (id) => document.getElementById(id).style.display = "none";
-
-    window.onload = () => createCalendar(currentDate);
-  </script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBI0e7UVfPb9_HimzEsqUF24PiJjuMO6WY",
+    authDomain: "planning-twitch-leatvlive.firebaseapp.com",
+    projectId: "planning-twitch-leatvlive",
+    storageBucket: "planning-twitch-leatvlive.firebasestorage.app",
+    messagingSenderId: "975502573700",
+    appId: "1:975502573700:web:a9c88741a6b476367d82d1",
+    measurementId: "G-TK7SY4TDSV"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
 </head>
 <body>
   <div class="container">
