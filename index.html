@@ -214,6 +214,21 @@ function checkSecretWord() {
 </head>
 <body>
 
+<!-- 🛠️ SECTION MODIFIABLE : Toutes les personnalisations ici -->
+<script>
+  // 🔒 Mot magique à deviner
+  const magicWord = "magic";
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("secretHint").setAttribute("data-secret", magicWord);
+  });
+
+  // 👤 Identifiants utilisateurs pour l'accès édition
+  const users = {
+    "leamc": "mdp2025"
+  };
+</script>
+<!-- 🛠️ FIN SECTION MODIFIABLE -->
+
   <div class="container">
     <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
     <div class="calendar-header">
@@ -461,4 +476,3 @@ window.onload = () => {
 </script>
 </body>
 </html>
-
