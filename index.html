@@ -3,6 +3,8 @@
 <head>
   <style>
     body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e); /* thème sombre */
+      color: #fff;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       background: #f3f0ff;
@@ -13,7 +15,7 @@
       padding: 30px;
     }
     .container {
-      background: white;
+      background: #292a3e;
       padding: 20px;
       border-radius: 20px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -171,9 +173,7 @@
 </script>
 </head>
 <body>
-<div id="welcome-message" data-edit="true">
-  🌟 Bienvenue dans ton calendrier magique, Léa !
-</div>
+
   <div class="container">
     <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
     <div class="calendar-header">
@@ -376,6 +376,28 @@ window.onload = () => {
     }
   }
   createStars();
+
+  // 🎁 Surprise cachée : tape "magic" dans la console
+  window.addEventListener('keydown', (e) => {
+    window.__secret = (window.__secret || '') + e.key;
+    if (window.__secret.endsWith('magic')) {
+      alert('✨ Une surprise magique apparaît !');
+      const surprise = document.createElement('div');
+      surprise.textContent = '🌈 Tu as trouvé l'étoile secrète !';
+      surprise.style.position = 'fixed';
+      surprise.style.bottom = '20px';
+      surprise.style.right = '20px';
+      surprise.style.padding = '10px 20px';
+      surprise.style.background = '#ff69b4';
+      surprise.style.color = '#fff';
+      surprise.style.borderRadius = '12px';
+      surprise.style.boxShadow = '0 0 15px rgba(255, 105, 180, 0.5)';
+      surprise.style.zIndex = '1001';
+      document.body.appendChild(surprise);
+      setTimeout(() => surprise.remove(), 6000);
+      window.__secret = '';
+    }
+  });
 </script>
 </body>
 </html>
