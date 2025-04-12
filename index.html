@@ -1,4 +1,4 @@
-><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <style>
@@ -361,9 +361,10 @@ async function createCalendar(date) {
     }
 
     if (data[day.toString()]) {
+      const d = data[day.toString()];
       const info = document.createElement("div");
-      info.className = `stream-info ${data[day].type}`;
-      info.innerHTML = `${data[day].title}<br><small>${data[day].type} à ${data[day].hour}</small>`;
+      info.className = `stream-info ${d.type}`;
+      info.innerHTML = `${d.title}<br><small>${d.type} à ${d.hour}</small>`;
       div.appendChild(info);
     }
 
