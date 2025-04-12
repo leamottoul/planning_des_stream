@@ -354,7 +354,7 @@ async function createCalendar(date) {
     const div = document.createElement("div");
     div.className = "day";
     div.dataset.day = day;
-    div.innerHTML = `<strong style='color: #000;'>${day}</strong>`;
+    div.innerHTML = `<strong style='color: inherit;'>${day}</strong>`;
 
     if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
       div.classList.add("today");
@@ -364,7 +364,15 @@ async function createCalendar(date) {
       const d = data[day.toString()];
       const info = document.createElement("div");
       info.className = `stream-info ${d.type}`;
-      info.innerHTML = `${d.title}<br><small>${d.type} à ${d.hour}</small>`;
+      const title = d.title?.trim();
+      const hour = d.hour || "";
+      const type = d.type || "Off";
+      if (type === "Off") {
+        info.innerHTML = `<small>Jour Off</small>`;
+        div.style.opacity = 0.5;
+      } else {
+        info.innerHTML = `${title ? title + '<br>' : ''}<small>${type}${hour ? ` à ${hour}` : ''}</small>`;
+      }
       div.appendChild(info);
     }
 
