@@ -225,7 +225,7 @@ function checkSecretWord() {
   // 👤 Identifiants utilisateurs pour l'accès édition
   const users = {
     "leamc": "mdp2025"
-  });
+  };
 </script>
 <!-- 🛠️ FIN SECTION MODIFIABLE -->
 
@@ -431,16 +431,7 @@ window.addEventListener("DOMContentLoaded", () => {
   } else {
     console.error("Firebase n'est pas chargé correctement.");
   }
-  setTimeout(() => {
-    const welcome = document.getElementById("welcome-message");
-    if (welcome) {
-      welcome.style.transition = "opacity 0.5s ease";
-      setTimeout(() => {
-      if (welcome) welcome.style.opacity = "0";
-    }, 5000);
-    }
-  }, 500);
-};
+});
 </script>
 <div class="stars" id="stars"></div>
 <script>
