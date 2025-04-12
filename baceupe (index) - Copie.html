@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ Calendrier Magique des Streams ✨</title>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      background: #292a3e;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 { text-align: center; color: #6c4db4; }
+    .calendar-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .calendar-header button {
+      padding: 8px 12px; background: #6c4db4; border: none; border-radius: 8px;
+      color: white; cursor: pointer;
+    }
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    .day { color: #000; background: #f3f3f3; border-radius: 10px; padding: 8px; min-height: 80px; }
+    .day.today { border: 2px solid #ffd54f; animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+    .modal-admin { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; }
+    .modal-admin-content { background: #5a189a; color: #fff; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 0 30px rgba(106, 17, 203, 0.6); }
+    .close-btn { position: absolute; right: 10px; top: 10px; cursor: pointer; font-size: 1.2em; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 8px; }
+    button.admin-save { padding: 10px; background: #9d4edd; border-radius: 8px; color: white; width: 100%; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 id="mainTitle">✨ Calendrier Magique des Streams ✨</h1>
+  <div class="calendar-header">
+    <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
+    <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
+    <button onclick="changeMonth(1)">Mois suivant ➡️</button>
+  </div>
+  <div class="calendar" id="calendar-days"></div>
+  <button onclick="toggleTheme()">🎨 Mode Sombre / Clair</button>
+  <input id="secretInput" type="text" placeholder="Entre le mot magique">
+  <button onclick="checkSecretWord()">✨ Valider</button>
+  <button id="generalSettings" style="display:none; background:#9d4edd;" onclick="openModal('adminModal')">⚙️ Modification Générale</button>
+</div>
+
+<!-- Popup Admin -->
+<div class="modal-admin" id="adminModal">
+  <div class="modal-admin-content">
+    <span class="close-btn" onclick="closeModal('adminModal')">❌</span>
+    <h2>⚙️ Modification Générale</h2>
+    <input id="adminTitle" placeholder="Titre principal">
+    <input id="adminStars" placeholder="Style des étoiles (CSS)">
+    <input id="adminMagicWord" placeholder="Mot magique">
+    <input id="adminMusic" placeholder="URL musique">
+    <input id="adminMagicPopup" placeholder="Texte popup magique">
+    <button class="admin-save" onclick="saveGeneralSettings()">💾 Enregistrer</button>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {/* ton firebaseConfig complet ici */};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Charge ici toutes tes fonctions originales (changeMonth, createCalendar, handleAuth, toggleTheme, checkSecretWord)
+
+  async function saveGeneralSettings() {
+    const settings = {
+      title: document.getElementById('adminTitle').value,
+      starsStyle: document.getElementById('adminStars').value,
+      magicWord: document.getElementById('adminMagicWord').value,
+      musicURL: document.getElementById('adminMusic').value,
+      magicPopup: document.getElementById('adminMagicPopup').value
+    };
+    await db.collection("generalSettings").doc("settings").set(settings);
+    alert('✅ Paramètres généraux mis à jour !');
+    closeModal('adminModal');
+  }
+
+  function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+  window.onload = async () => {
+    // Chargement initial calendrier + paramètres généraux
+  };
+</script>
+</body>
+</html>
