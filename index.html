@@ -156,15 +156,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendrier Magique des Streams</title>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js">function toggleTheme() {
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+<script>
+function toggleTheme() {
   const body = document.body;
-  const isDark = body.classList.toggle("dark-theme");
+  const container = document.querySelector(".container");
+  const isDark = body.classList.toggle("dark-mode");
   if (isDark) {
     body.style.background = "linear-gradient(135deg, #1a1a2e, #16213e)";
     body.style.color = "#fff";
+    if (container) container.style.background = "#292a3e";
   } else {
     body.style.background = "#f3f0ff";
     body.style.color = "#222";
+    if (container) container.style.background = "#ffffff";
   }
 }
 
@@ -187,7 +193,6 @@ function checkSecretWord() {
   }
 }
 </script>
-<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyBI0e7UVfPb9_HimzEsqUF24PiJjuMO6WY",
@@ -443,4 +448,3 @@ window.onload = () => {
 </script>
 </body>
 </html>
-
