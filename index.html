@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+><!DOCTYPE html>
 <html lang="fr">
 <head>
   <style>
@@ -360,7 +360,7 @@ async function createCalendar(date) {
       div.classList.add("today");
     }
 
-    if (data[day]) {
+    if (data[day.toString()]) {
       const info = document.createElement("div");
       info.className = `stream-info ${data[day].type}`;
       info.innerHTML = `${data[day].title}<br><small>${data[day].type} à ${data[day].hour}</small>`;
@@ -371,7 +371,7 @@ async function createCalendar(date) {
       if (!editUnlocked) return;
       selectedDay = day;
       openModal('editModal');
-      const d = data[day] || {};
+      const d = data[day.toString()] || {};
       document.getElementById("title").value = d.title || "";
       document.getElementById("type").value = d.type || "Minecraft";
       document.getElementById("hour").value = d.hour || "20h00";
