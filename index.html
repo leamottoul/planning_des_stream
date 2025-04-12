@@ -288,7 +288,6 @@ function checkSecretWord() {
   </div>
 </div>
 <script>
-const users = { "leamc": "mdp2025" };
 let editUnlocked = false;
 let failedAttempts = 0;
 let lockoutUntil = null;
@@ -464,7 +463,7 @@ window.addEventListener("DOMContentLoaded", () => {
     if (window.__secret.endsWith('magic')) {
       alert('✨ Une surprise magique apparaît !');
       const surprise = document.createElement('div');
-      surprise.textContent = '🌈 Tu as trouvé l'étoile secrète !';
+      surprise.textContent = "🌈 Tu as trouvé l'étoile secrète !";
       surprise.style.position = 'fixed';
       surprise.style.bottom = '20px';
       surprise.style.right = '20px';
