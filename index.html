@@ -341,7 +341,7 @@ async function createCalendar(date) {
 
   container.innerHTML = "";
   document.getElementById("month-year").textContent =
-    `✨ Calendrier Magique des Streams – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
+    `✨ Calendrier des Streams leatvlive.tv – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
 
   for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
     const empty = document.createElement("div");
