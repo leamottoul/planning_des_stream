@@ -256,19 +256,25 @@ function checkSecretWord() {
     </div>
     <div class="calendar" id="calendar-days" style="min-height: 300px; border: 1px dashed #ccc; padding: 10px;"></div>
 	
-    <div style="display:flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
-  <div style="display: flex; gap: 10px;">
-    <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
-      🎨 Mode Sombre / Clair
-    </button>
-    <button onclick="toggleStars()" id="toggleStarsBtn" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
-      ✨ Désactiver les étoiles
+   <div style="display:flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+  <div>
+    <input id="secretInput" type="text" placeholder="Entre le mot magique"
+           style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
+    <button onclick="checkSecretWord()" 
+            style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">
+      ✨ Valider
     </button>
   </div>
 
-  <div>
-    <input id="secretInput" type="text" placeholder="Entre le mot magique" style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
-    <button onclick="checkSecretWord()" style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">✨ Valider</button>
+  <div style="display: flex; gap: 10px;">
+    <button onclick="toggleTheme()" 
+            style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+      🎨 Mode Sombre / Clair
+    </button>
+    <button onclick="toggleStars()" id="toggleStarsBtn" 
+            style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+      ✨ Désactiver les étoiles
+    </button>
   </div>
 </div>
 <d="secretHint" data-secret="magic" style="display:none;"></div>
