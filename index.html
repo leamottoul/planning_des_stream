@@ -360,6 +360,9 @@ function checkSecretWord() {
 	<button onclick="openModal('settingsModal')" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
     ⚙️ Paramètres
   </button>
+  <button id="adminBtn" onclick="openModal('parametreAdmin')" style="display:none; background:#b04db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+  ⚙️ Admin
+</button>
   </div>
 </div>
 
@@ -557,6 +560,11 @@ function validateLogin() {
     closeModal("loginModal");
     editUnlocked = !editUnlocked;
     document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
+	const adminBtn = document.getElementById("adminBtn");
+if (adminBtn) {
+  adminBtn.style.display = editUnlocked ? "inline-block" : "none";
+}
+
     alert(editUnlocked ? "🔓 Accès débloqué !" : "🌙 Déconnectée. À bientôt Léa !");
     failedAttempts = 0;
   } else {
