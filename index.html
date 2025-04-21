@@ -430,9 +430,25 @@ function checkSecretWord() {
   <div class="modal-content" style="background: #4b1f5a; color: white; border-radius: 16px; padding: 20px;">
     <span class="close-btn" onclick="closeModal('parametreAdmin')">❌</span>
     <h2>🛠️ Paramètres Admin</h2>
-    <p>Bienvenue dans les paramètres avancés, Léa 🌙</p>
-    <!-- Tu pourras ajouter tes outils admin ici -->
+
+    <label>🔒 Mot magique global</label>
+    <input type="text" id="adminMagicWord" placeholder="Ex: licorne" style="padding:6px; border-radius:8px; border:none; margin-bottom:10px; width:100%;" />
+
+    <label>🌟 Étoiles magiques forcées</label>
+    <select id="adminStarsMode" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;">
+      <option value="auto">Auto (chaque utilisateur)</option>
+      <option value="on">Forcé : Activées</option>
+      <option value="off">Forcé : Désactivées</option>
+    </select>
+
+    <label>✨ Texte du popup magique</label>
+    <textarea id="adminPopupMessage" rows="4" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;"></textarea>
+
+    <button onclick="saveAdminSettings()" style="padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+      💾 Enregistrer les réglages
+    </button>
   </div>
+</div>
 <script>
 let editUnlocked = false;
 let failedAttempts = 0;
@@ -603,6 +619,36 @@ window.addEventListener("DOMContentLoaded", () => {
   if (btn) {
     btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
   }
+  // 🔧 Chargement des paramètres admin globaux
+db.collection("settings").doc("global").get().then((doc) => {
+  if (doc.exists) {
+    const settings = doc.data();
+
+    // Mot magique
+    document.getElementById("secretHint").setAttribute("data-secret", settings.magicWord || "magic");
+    const mw = document.getElementById("adminMagicWord");
+    if (mw) mw.value = settings.magicWord || "";
+
+    // Étoiles (admin priorité)
+    const starsMode = settings.starsMode || "auto";
+    const stars = document.getElementById("stars");
+    if (stars) {
+      if (starsMode === "off") stars.style.display = "none";
+      else if (starsMode === "on") stars.style.display = "block";
+    }
+    const sm = document.getElementById("adminStarsMode");
+    if (sm) sm.value = starsMode;
+
+    // Message magique
+    const popupMsg = settings.popupMessage || "Tu as découvert le mot magique ✨<br>Une pluie d’étoiles t’accompagne !";
+    const pm = document.getElementById("adminPopupMessage");
+    if (pm) pm.value = popupMsg;
+
+    const magicModal = document.querySelector("#magicModal p");
+    if (magicModal) magicModal.innerHTML = popupMsg;
+  }
+});
+
 
   // 🔐 Bloc mot magique
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
@@ -617,6 +663,22 @@ window.addEventListener("DOMContentLoaded", () => {
     console.error("Firebase n'est pas chargé correctement.");
   }
 });
+function saveAdminSettings() {
+  const settings = {
+    magicWord: document.getElementById("adminMagicWord").value.trim().toLowerCase(),
+    starsMode: document.getElementById("adminStarsMode").value,
+    popupMessage: document.getElementById("adminPopupMessage").value.trim()
+  };
+
+  db.collection("settings").doc("global").set(settings).then(() => {
+    alert("✅ Paramètres enregistrés pour tous !");
+    closeModal("parametreAdmin");
+  }).catch((error) => {
+    console.error("Erreur sauvegarde admin :", error);
+    alert("❌ Erreur lors de l'enregistrement.");
+  });
+}
+
 
 </script>
 <div class="stars" id="stars"></div>
