@@ -155,6 +155,95 @@
     50% { transform: scale(1.5); opacity: 1; }
     100% { transform: scale(1); opacity: 0.8; }
   }
+  @media (max-width: 768px) {
+  /* 🗓️ Calendrier - Adaptation en mobile */
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 colonnes adaptatives */
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .calendar .day {
+    font-size: 0.7em;
+    padding: 5px;
+    min-height: auto;
+  }
+
+  .calendar .stream-info {
+    font-size: 0.65em;
+    word-break: break-word;
+  }
+
+  /* 📆 En-tête mois + boutons */
+  .calendar-header {
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .calendar-header button {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  /* ⚠️ Message d'avertissement */
+  .container > div[style*="border: 1px solid"] {
+    font-size: 0.75em;
+    padding: 6px 10px;
+    margin: 12px auto;
+  }
+
+  /* 🧙‍♀️ Zone mot magique + boutons en bas */
+  .container > div:last-of-type {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .container input[type="text"],
+  .container button {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    font-size: 0.9em;
+  }
+
+  /* ✨ Popup magique et autres modals */
+  .modal .modal-content {
+    width: 90%;
+    font-size: 0.9em;
+  }
+}
+	@media screen and (max-width: 600px) {
+  .modal-content {
+    width: 90% !important;
+    padding: 15px !important;
+    font-size: 0.95em;
+  }
+
+  .modal-content input,
+  .modal-content select,
+  .modal-content button {
+    width: 100% !important;
+    margin-top: 10px;
+    font-size: 1em;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2em;
+    text-align: center;
+  }
+
+  .modal-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.2em;
+  }
+}
+
 </style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -238,7 +327,7 @@ function checkSecretWord() {
 
   // 👤 Identifiants utilisateurs pour l'accès édition
   const users = {
-    "leamc": "mdp2024"
+    "leatv": "jhj#^$JAh7"
   };
 </script>
 <!-- 🛠️ FIN SECTION MODIFIABLE -->
@@ -268,14 +357,12 @@ function checkSecretWord() {
 <div id="secretHint" data-secret="magic" style="display:none;"></div>
 
   <div style="display: flex; gap: 10px;">
-    <button onclick="toggleTheme()" 
-            style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
-      🎨 Mode Sombre / Clair
-    </button>
-    <button onclick="toggleStars()" id="toggleStarsBtn" 
-            style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
-      ✨ Désactiver les étoiles
-    </button>
+	<button onclick="openModal('settingsModal')" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    ⚙️ Paramètres
+  </button>
+  <button id="adminBtn" onclick="openModal('parametreAdmin')" style="display:none; background:#b04db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+  ⚙️ Admin
+</button>
   </div>
 </div>
 
@@ -319,6 +406,51 @@ function checkSecretWord() {
     </select>
     <button onclick="saveEdit()">💾 Enregistrer</button>
     <button onclick="deleteDay()">🗑️ Supprimer</button>
+  </div>
+</div>
+<!-- Popup Paramètres -->
+<div class="modal" id="settingsModal" style="display:none">
+  <div class="modal-content" style="width: 400px; padding: 20px; border-radius: 16px;">
+    <span class="close-btn" onclick="closeModal('settingsModal')">❌</span>
+    <h2>⚙️ Paramètres</h2>
+	<p>Tu peux personnaliser ton expérience magique ici ✨</p>
+<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+  <button onclick="toggleStars()" id="toggleStarsBtn" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    ✨ Activer les étoiles
+  </button>
+  <p id="starsLockedMsg" style="display:none; color: #b00020; font-size: 0.8em; margin-top: 4px;">
+  ⚠️ Cette option est bloquée par l’admin 😓
+</p>
+
+  <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    🎨 Mode Sombre / Clair
+  </button>
+</div>
+    <!-- Les options arriveront ici ensuite -->
+  </div>
+</div>
+<!-- Popup Paramètres Admin -->
+<div class="modal" id="parametreAdmin" style="display:none">
+  <div class="modal-content" style="background: #4b1f5a; color: white; border-radius: 16px; padding: 20px;">
+    <span class="close-btn" onclick="closeModal('parametreAdmin')">❌</span>
+    <h2>🛠️ Paramètres Admin</h2>
+
+    <label>🔒 Mot magique global</label>
+    <input type="text" id="adminMagicWord" placeholder="Ex: licorne" style="padding:6px; border-radius:8px; border:none; margin-bottom:10px; width:100%;" />
+
+    <label>🌟 Étoiles magiques forcées</label>
+    <select id="adminStarsMode" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;">
+      <option value="auto">Auto (chaque utilisateur)</option>
+      <option value="on">Forcé : Activées</option>
+      <option value="off">Forcé : Désactivées</option>
+    </select>
+
+    <label>✨ Texte du popup magique</label>
+    <textarea id="adminPopupMessage" rows="4" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;"></textarea>
+
+    <button onclick="saveAdminSettings()" style="padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+      💾 Enregistrer les réglages
+    </button>
   </div>
 </div>
 <script>
@@ -453,6 +585,11 @@ function validateLogin() {
     closeModal("loginModal");
     editUnlocked = !editUnlocked;
     document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
+	const adminBtn = document.getElementById("adminBtn");
+if (adminBtn) {
+  adminBtn.style.display = editUnlocked ? "inline-block" : "none";
+}
+
     alert(editUnlocked ? "🔓 Accès débloqué !" : "🌙 Déconnectée. À bientôt Léa !");
     failedAttempts = 0;
   } else {
@@ -477,16 +614,61 @@ function closeModal(id) {
 
 window.addEventListener("DOMContentLoaded", () => {
   // 🌟 Appliquer le réglage étoiles
-  const starsVisible = localStorage.getItem("starsVisible") !== "false";
-  const stars = document.getElementById("stars");
-  const btn = document.getElementById("toggleStarsBtn");
-  if (stars) {
-    stars.style.display = starsVisible ? "block" : "none";
-  }
-  if (btn) {
-    btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
-  }
+ let starsMode = "auto"; // par défaut
 
+db.collection("settings").doc("global").get().then((doc) => {
+  if (doc.exists) {
+    const settings = doc.data();
+    starsMode = settings.starsMode || "auto";
+
+    // 🌟 Application du forçage étoile
+    const stars = document.getElementById("stars");
+    if (stars) {
+      if (starsMode === "off") {
+        stars.style.display = "none";
+      } else if (starsMode === "on") {
+        stars.style.display = "block";
+      } else {
+        // mode auto → on applique localStorage
+        const starsVisible = localStorage.getItem("starsVisible") !== "false";
+        stars.style.display = starsVisible ? "block" : "none";
+        const btn = document.getElementById("toggleStarsBtn");
+        if (btn) {
+          btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
+        }
+      }
+    }
+	const warning = document.getElementById("starsLockedMsg");
+if (warning) {
+  warning.style.display = (starsMode === "on" || starsMode === "off") ? "block" : "none";
+}
+const btn = document.getElementById("toggleStarsBtn");
+if (btn) {
+  if (starsMode === "on" || starsMode === "off") {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    btn.title = "Option désactivée par l'admin";
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.title = "";
+  }
+}
+    // reste inchangé...
+    const sm = document.getElementById("adminStarsMode");
+    if (sm) sm.value = starsMode;
+
+    const mw = document.getElementById("adminMagicWord");
+    if (mw) mw.value = settings.magicWord || "";
+    document.getElementById("secretHint").setAttribute("data-secret", settings.magicWord || "magic");
+
+    const popupMsg = settings.popupMessage || "Tu as découvert le mot magique ✨<br>Une pluie d’étoiles t’accompagne !";
+    const pm = document.getElementById("adminPopupMessage");
+    if (pm) pm.value = popupMsg;
+    const magicModal = document.querySelector("#magicModal p");
+    if (magicModal) magicModal.innerHTML = popupMsg;
+  }
+});
   // 🔐 Bloc mot magique
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
   if (triesLeft === "0") {
@@ -500,6 +682,22 @@ window.addEventListener("DOMContentLoaded", () => {
     console.error("Firebase n'est pas chargé correctement.");
   }
 });
+function saveAdminSettings() {
+  const settings = {
+    magicWord: document.getElementById("adminMagicWord").value.trim().toLowerCase(),
+    starsMode: document.getElementById("adminStarsMode").value,
+    popupMessage: document.getElementById("adminPopupMessage").value.trim()
+  };
+
+  db.collection("settings").doc("global").set(settings).then(() => {
+    alert("✅ Paramètres enregistrés pour tous !");
+    closeModal("parametreAdmin");
+  }).catch((error) => {
+    console.error("Erreur sauvegarde admin :", error);
+    alert("❌ Erreur lors de l'enregistrement.");
+  });
+}
+
 
 </script>
 <div class="stars" id="stars"></div>
