@@ -414,17 +414,23 @@ function checkSecretWord() {
     <span class="close-btn" onclick="closeModal('settingsModal')">❌</span>
     <h2>⚙️ Paramètres</h2>
 	<p>Tu peux personnaliser ton expérience magique ici ✨</p>
-
 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
   <button onclick="toggleStars()" id="toggleStarsBtn" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
     ✨ Activer les étoiles
   </button>
-
   <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
     🎨 Mode Sombre / Clair
   </button>
 </div>
-
+<!-- Popup Paramètres Admin -->
+<div class="modal" id="parametreAdmin" style="display:none">
+  <div class="modal-content" style="background: #4b1f5a; color: white; border-radius: 16px; padding: 20px;">
+    <span class="close-btn" onclick="closeModal('parametreAdmin')">❌</span>
+    <h2>🛠️ Paramètres Admin</h2>
+    <p>Bienvenue dans les paramètres avancés, Léa 🌙</p>
+    <!-- Tu pourras ajouter tes outils admin ici -->
+  </div>
+</div>
     <!-- Les options arriveront ici ensuite -->
   </div>
 </div>
