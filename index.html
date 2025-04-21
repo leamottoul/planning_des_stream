@@ -211,21 +211,6 @@ function checkSecretWord() {
     btn.textContent = "❌ Désactiver les étoiles";
   }
 }
-
-// Appliquer le réglage au chargement
-window.addEventListener("DOMContentLoaded", () => {
-  const starsVisible = localStorage.getItem("starsVisible") !== "false";
-  const stars = document.getElementById("stars");
-  const btn = document.getElementById("toggleStarsBtn");
-  if (!starsVisible) {
-    stars.style.display = "none";
-    if (btn) btn.textContent = "✨ Activer les étoiles";
-  } else {
-    stars.style.display = "block";
-    if (btn) btn.textContent = "❌ Désactiver les étoiles";
-  }
-});
-
 }
 </script>
 <script>
