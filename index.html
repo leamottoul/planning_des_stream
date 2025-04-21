@@ -318,6 +318,11 @@ async function saveData(key, data) {
   const ref = db.collection("plannings").doc(key);
   await ref.set(data);
 }
+async function getDataOnce(key) {
+  const ref = db.collection("plannings").doc(key);
+  const snap = await ref.get();
+  return snap.exists ? snap.data() : {};
+}
 
 async function deleteDay() {
   const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
@@ -333,7 +338,8 @@ async function saveEdit() {
   const type = document.getElementById("type").value;
   const hour = document.getElementById("hour").value;
   const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
-  const data = await loadData(key);
+  const data = await getDataOnce(key);
+
   data[selectedDay] = { title, type, hour };
   await saveData(key, data);
   closeModal("editModal");
