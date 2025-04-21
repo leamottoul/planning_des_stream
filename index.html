@@ -633,6 +633,18 @@ db.collection("settings").doc("global").get().then((doc) => {
           btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
         }
       }
+	  if (btn) {
+  if (starsMode === "on" || starsMode === "off") {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    btn.title = "Option désactivée par l'admin";
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.title = "";
+  }
+}
+
     }
 
     // reste inchangé...
