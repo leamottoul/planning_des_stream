@@ -418,6 +418,10 @@ function checkSecretWord() {
   <button onclick="toggleStars()" id="toggleStarsBtn" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
     ✨ Activer les étoiles
   </button>
+  <p id="starsLockedMsg" style="display:none; color: #b00020; font-size: 0.8em; margin-top: 4px;">
+  ⚠️ Cette option est bloquée par l’admin 😓
+</p>
+
   <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
     🎨 Mode Sombre / Clair
   </button>
@@ -633,8 +637,11 @@ db.collection("settings").doc("global").get().then((doc) => {
           btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
         }
       }
-
     }
+	const warning = document.getElementById("starsLockedMsg");
+if (warning) {
+  warning.style.display = (starsMode === "on" || starsMode === "off") ? "block" : "none";
+}
 const btn = document.getElementById("toggleStarsBtn");
 if (btn) {
   if (starsMode === "on" || starsMode === "off") {
