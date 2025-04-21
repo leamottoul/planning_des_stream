@@ -196,6 +196,36 @@ function checkSecretWord() {
       alert(`❌ Mauvais mot. Il te reste ${tries} essais aujourd’hui.`);
     }
   }
+  function toggleStars() {
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  const isVisible = stars.style.display !== "none";
+
+  if (isVisible) {
+    stars.style.display = "none";
+    localStorage.setItem("starsVisible", "false");
+    btn.textContent = "✨ Activer les étoiles";
+  } else {
+    stars.style.display = "block";
+    localStorage.setItem("starsVisible", "true");
+    btn.textContent = "❌ Désactiver les étoiles";
+  }
+}
+
+// Appliquer le réglage au chargement
+window.addEventListener("DOMContentLoaded", () => {
+  const starsVisible = localStorage.getItem("starsVisible") !== "false";
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  if (!starsVisible) {
+    stars.style.display = "none";
+    if (btn) btn.textContent = "✨ Activer les étoiles";
+  } else {
+    stars.style.display = "block";
+    if (btn) btn.textContent = "❌ Désactiver les étoiles";
+  }
+});
+
 }
 </script>
 <script>
@@ -242,12 +272,22 @@ function checkSecretWord() {
     </div>
     <div class="calendar" id="calendar-days" style="min-height: 300px; border: 1px dashed #ccc; padding: 10px;"></div>
 	
-    <div style="margin-top: 20px; text-align: center;">
-      <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">🎨 Mode Sombre / Clair</button>
-      <br><br>
-      <input id="secretInput" type="text" placeholder="Entre le mot magique" style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
-      <button onclick="checkSecretWord()" style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">✨ Valider</button>
-      <div id="secretHint" data-secret="magic" style="display:none;"></div>
+    <div style="display:flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+  <div style="display: flex; gap: 10px;">
+    <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+      🎨 Mode Sombre / Clair
+    </button>
+    <button onclick="toggleStars()" id="toggleStarsBtn" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+      ✨ Désactiver les étoiles
+    </button>
+  </div>
+
+  <div>
+    <input id="secretInput" type="text" placeholder="Entre le mot magique" style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
+    <button onclick="checkSecretWord()" style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">✨ Valider</button>
+  </div>
+</div>
+d="secretHint" data-secret="magic" style="display:none;"></div>
 
 <!-- Popup magique -->
 <div class="modal" id="magicModal" style="display:none">
