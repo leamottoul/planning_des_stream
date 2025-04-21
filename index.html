@@ -635,11 +635,7 @@ db.collection("settings").doc("global").get().then((doc) => {
       }
 
     }
-if (stars) {
-  // ... affichage étoiles en fonction de starsMode ...
-}
-
-// ✅ En dehors du "if (stars)"
+const btn = document.getElementById("toggleStarsBtn");
 if (btn) {
   if (starsMode === "on" || starsMode === "off") {
     btn.disabled = true;
