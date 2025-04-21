@@ -365,6 +365,9 @@ function checkSecretWord() {
             style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
       ✨ Désactiver les étoiles
     </button>
+	<button onclick="openModal('settingsModal')" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    ⚙️ Paramètres
+  </button>
   </div>
 </div>
 
@@ -410,12 +413,6 @@ function checkSecretWord() {
     <button onclick="deleteDay()">🗑️ Supprimer</button>
   </div>
 </div>
-<!-- 🔧 Bouton Paramètres -->
-<div style="position: absolute; bottom: 12px; right: 16px;">
-  <button onclick="openModal('settingsModal')" style="padding: 8px 12px; border: none; border-radius: 10px; background: #6c4db4; color: white; cursor: pointer;">
-    ⚙️ Paramètres
-  </button>
-</div>
 <!-- Popup Paramètres -->
 <div class="modal" id="settingsModal" style="display:none">
   <div class="modal-content" style="width: 400px; padding: 20px; border-radius: 16px;">
@@ -425,7 +422,6 @@ function checkSecretWord() {
     <!-- Les options arriveront ici ensuite -->
   </div>
 </div>
-
 <script>
 let editUnlocked = false;
 let failedAttempts = 0;
