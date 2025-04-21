@@ -178,7 +178,21 @@ function toggleTheme() {
     if (container) container.style.background = "#ffffff";
   }
 }
+  function toggleStars() {
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  const isVisible = stars.style.display !== "none";
 
+  if (isVisible) {
+    stars.style.display = "none";
+    localStorage.setItem("starsVisible", "false");
+    btn.textContent = "✨ Activer les étoiles";
+  } else {
+    stars.style.display = "block";
+    localStorage.setItem("starsVisible", "true");
+    btn.textContent = "❌ Désactiver les étoiles";
+  }
+}
 function checkSecretWord() {
   const input = document.getElementById("secretInput").value.trim().toLowerCase();
   const correct = document.getElementById("secretHint").getAttribute("data-secret");
@@ -196,21 +210,6 @@ function checkSecretWord() {
       alert(`❌ Mauvais mot. Il te reste ${tries} essais aujourd’hui.`);
     }
   }
-  function toggleStars() {
-  const stars = document.getElementById("stars");
-  const btn = document.getElementById("toggleStarsBtn");
-  const isVisible = stars.style.display !== "none";
-
-  if (isVisible) {
-    stars.style.display = "none";
-    localStorage.setItem("starsVisible", "false");
-    btn.textContent = "✨ Activer les étoiles";
-  } else {
-    stars.style.display = "block";
-    localStorage.setItem("starsVisible", "true");
-    btn.textContent = "❌ Désactiver les étoiles";
-  }
-}
 }
 </script>
 <script>
