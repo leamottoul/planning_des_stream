@@ -158,7 +158,7 @@
 </style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calendrier Magique des Streams</title>
+  <title>Calendrier des Streams leatvlive</title>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
 <script>
@@ -178,7 +178,21 @@ function toggleTheme() {
     if (container) container.style.background = "#ffffff";
   }
 }
+  function toggleStars() {
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  const isVisible = stars.style.display !== "none";
 
+  if (isVisible) {
+    stars.style.display = "none";
+    localStorage.setItem("starsVisible", "false");
+    btn.textContent = "✨ Activer les étoiles";
+  } else {
+    stars.style.display = "block";
+    localStorage.setItem("starsVisible", "true");
+    btn.textContent = "❌ Désactiver les étoiles";
+  }
+}
 function checkSecretWord() {
   const input = document.getElementById("secretInput").value.trim().toLowerCase();
   const correct = document.getElementById("secretHint").getAttribute("data-secret");
@@ -230,20 +244,40 @@ function checkSecretWord() {
 <!-- 🛠️ FIN SECTION MODIFIABLE -->
 
   <div class="container">
-    <h1 id="month-year">✨ Calendrier Magique des Streams</h1>
+    <h1 id="month-year">✨ Calendrier des Streams leatvlive.tv</h1>
+	<div style="background: #fff4f4; border: 1px solid #ff6b6b; padding: 8px 12px; border-radius: 10px; color: #b00020; font-size: 0.75em; margin: 20px auto; text-align: center; max-width: 500px;">
+  ⚠️ Le planning est à titre informatif et n'engage à rien. Celui-ci peut être modifié à tout moment et ne pas être respecté à 100%. Merci à vous ⚠️
+</div>
+
     <div class="calendar-header">
       <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
       <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
       <button onclick="changeMonth(1)">Mois suivant ➡️</button>
     </div>
     <div class="calendar" id="calendar-days" style="min-height: 300px; border: 1px dashed #ccc; padding: 10px;"></div>
+	
+   <div style="display:flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+  <div>
+    <input id="secretInput" type="text" placeholder="Entre le mot magique"
+           style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
+    <button onclick="checkSecretWord()" 
+            style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">
+      ✨ Valider
+    </button>
+  </div>
+<div id="secretHint" data-secret="magic" style="display:none;"></div>
 
-    <div style="margin-top: 20px; text-align: center;">
-      <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">🎨 Mode Sombre / Clair</button>
-      <br><br>
-      <input id="secretInput" type="text" placeholder="Entre le mot magique" style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
-      <button onclick="checkSecretWord()" style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">✨ Valider</button>
-      <div id="secretHint" data-secret="magic" style="display:none;"></div>
+  <div style="display: flex; gap: 10px;">
+    <button onclick="toggleTheme()" 
+            style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+      🎨 Mode Sombre / Clair
+    </button>
+    <button onclick="toggleStars()" id="toggleStarsBtn" 
+            style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+      ✨ Désactiver les étoiles
+    </button>
+  </div>
+</div>
 
 <!-- Popup magique -->
 <div class="modal" id="magicModal" style="display:none">
@@ -277,11 +311,11 @@ function checkSecretWord() {
       <option value="Off">Off/Pause</option>
     </select>
     <select id="hour">
-      <option value="10h00">13h00</option>
-      <option value="14h30">15h00</option>
+      <option value="13h00">13h00</option>
+      <option value="15h00">15h00</option>
       <option value="18h00">18h00</option>
       <option value="20h00">20h00</option>
-      <option value="22h00">--h--</option>
+      <option value="--h--">--h--</option>
     </select>
     <button onclick="saveEdit()">💾 Enregistrer</button>
     <button onclick="deleteDay()">🗑️ Supprimer</button>
@@ -298,15 +332,26 @@ function getKey(year, month) {
   return `${year}-${month + 1}`;
 }
 
-async function loadData(key) {
+let unsubscribe = null;
+
+function listenToData(key) {
   const ref = db.collection("plannings").doc(key);
-  const snap = await ref.get();
-  return snap.exists ? snap.data() : {};
+  if (unsubscribe) unsubscribe(); // Arrêter l’écoute précédente
+  unsubscribe = ref.onSnapshot((doc) => {
+    const data = doc.exists ? doc.data() : {};
+    createCalendar(currentDate, data);
+  });
 }
+
 
 async function saveData(key, data) {
   const ref = db.collection("plannings").doc(key);
   await ref.set(data);
+}
+async function getDataOnce(key) {
+  const ref = db.collection("plannings").doc(key);
+  const snap = await ref.get();
+  return snap.exists ? snap.data() : {};
 }
 
 async function deleteDay() {
@@ -323,25 +368,26 @@ async function saveEdit() {
   const type = document.getElementById("type").value;
   const hour = document.getElementById("hour").value;
   const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
-  const data = await loadData(key);
+  const data = await getDataOnce(key);
+
   data[selectedDay] = { title, type, hour };
   await saveData(key, data);
   closeModal("editModal");
   createCalendar(currentDate);
 }
 
-async function createCalendar(date) {
+function createCalendar(date, data = null) {
   const year = date.getFullYear();
   const month = date.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const today = new Date();
-  const data = await loadData(getKey(year, month));
+  if (!data) return; // On attend que le listener fournisse les données
   const container = document.getElementById("calendar-days");
 
   container.innerHTML = "";
   document.getElementById("month-year").textContent =
-    `✨ Calendrier Magique des Streams – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
+    `✨ Calendrier des Streams leatvlive.tv – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
 
   for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
     const empty = document.createElement("div");
@@ -391,7 +437,7 @@ async function createCalendar(date) {
 
 function changeMonth(delta) {
   currentDate.setMonth(currentDate.getMonth() + delta);
-  createCalendar(currentDate);
+  listenToData(getKey(currentDate.getFullYear(), currentDate.getMonth()));
 }
 
 function handleAuth() {
@@ -430,16 +476,31 @@ function closeModal(id) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  // 🌟 Appliquer le réglage étoiles
+  const starsVisible = localStorage.getItem("starsVisible") !== "false";
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  if (stars) {
+    stars.style.display = starsVisible ? "block" : "none";
+  }
+  if (btn) {
+    btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
+  }
+
+  // 🔐 Bloc mot magique
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
   if (triesLeft === "0") {
     document.getElementById("secretInput").disabled = true;
   }
+
+  // 📆 Création / Écoute calendrier
   if (typeof db !== 'undefined') {
-    createCalendar(currentDate);
+    listenToData(getKey(currentDate.getFullYear(), currentDate.getMonth()));
   } else {
     console.error("Firebase n'est pas chargé correctement.");
   }
 });
+
 </script>
 <div class="stars" id="stars"></div>
 <script>
