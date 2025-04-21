@@ -486,16 +486,31 @@ function closeModal(id) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  // 🌟 Appliquer le réglage étoiles
+  const starsVisible = localStorage.getItem("starsVisible") !== "false";
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  if (stars) {
+    stars.style.display = starsVisible ? "block" : "none";
+  }
+  if (btn) {
+    btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
+  }
+
+  // 🔐 Bloc mot magique
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
   if (triesLeft === "0") {
     document.getElementById("secretInput").disabled = true;
   }
+
+  // 📆 Création / Écoute calendrier
   if (typeof db !== 'undefined') {
     listenToData(getKey(currentDate.getFullYear(), currentDate.getMonth()));
   } else {
     console.error("Firebase n'est pas chargé correctement.");
   }
 });
+
 </script>
 <div class="stars" id="stars"></div>
 <script>
