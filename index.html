@@ -650,6 +650,26 @@ db.collection("settings").doc("global").get().then((doc) => {
     if (magicModal) magicModal.innerHTML = popupMsg;
   }
 });
+  // 🔧 Chargement des paramètres admin globaux
+db.collection("settings").doc("global").get().then((doc) => {
+  if (doc.exists) {
+    const settings = doc.data();
+
+    // Mot magique
+    document.getElementById("secretHint").setAttribute("data-secret", settings.magicWord || "magic");
+    const mw = document.getElementById("adminMagicWord");
+    if (mw) mw.value = settings.magicWord || "";
+
+    // Étoiles (admin priorité)
+    const starsMode = settings.starsMode || "auto";
+    const stars = document.getElementById("stars");
+    if (stars) {
+      if (starsMode === "off") stars.style.display = "none";
+      else if (starsMode === "on") stars.style.display = "block";
+    }
+    const sm = document.getElementById("adminStarsMode");
+    if (sm) sm.value = starsMode;
+
     // Message magique
     const popupMsg = settings.popupMessage || "Tu as découvert le mot magique ✨<br>Une pluie d’étoiles t’accompagne !";
     const pm = document.getElementById("adminPopupMessage");
