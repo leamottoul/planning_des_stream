@@ -231,16 +231,17 @@ function checkSecretWord() {
 
   <div class="container">
     <h1 id="month-year">✨ Calendrier des Streams leatvlive.tv</h1>
+	<div style="background: #fff4f4; border: 1px solid #ff6b6b; padding: 8px 12px; border-radius: 10px; color: #b00020; font-size: 0.75em; margin: 20px auto; text-align: center; max-width: 500px;">
+  ⚠️ Le planning est à titre informatif et n'engage à rien. Celui-ci peut être modifié à tout moment et ne pas être respecté à 100%. Merci à vous ⚠️
+</div>
+
     <div class="calendar-header">
       <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
       <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
       <button onclick="changeMonth(1)">Mois suivant ➡️</button>
     </div>
     <div class="calendar" id="calendar-days" style="min-height: 300px; border: 1px dashed #ccc; padding: 10px;"></div>
-	<p style="color: red; font-size: 0.75em; text-align: center; margin-top: 20px;">
-  ⚠️ Le planning est à titre informatif et n'engage à rien. Celui-ci peut être modifié à tout moment et ne pas être respecté à 100%. Merci à vous ⚠️
-	</p>
-
+	
     <div style="margin-top: 20px; text-align: center;">
       <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">🎨 Mode Sombre / Clair</button>
       <br><br>
