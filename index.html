@@ -476,11 +476,9 @@ function checkSecretWord() {
   <button onclick="saveAdminSettings()" style="margin-top: 10px; padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
     💾
   </button>
-</div>
-
-
-    <div id="tabLog" class="admin-tab" style="display:none;">Contenu Historique (à venir)</div>
-
+<div id="tabLog" class="admin-tab" style="display:none;">
+  <div id="adminLogContainer" style="max-height: 300px; overflow-y: auto; font-size: 0.9em;">
+    <p>Chargement de l'historique...</p>
   </div>
 </div>
 <script>
@@ -732,6 +730,15 @@ function saveAdminSettings() {
     alert("❌ Erreur lors de l'enregistrement.");
   });
 }
+  const logEntry = {
+    user: window.connectedUser?.name || "inconnu",
+    role: window.connectedUser?.role || "non défini",
+    date: new Date().toLocaleDateString("fr-FR"),
+    time: new Date().toLocaleTimeString("fr-FR"),
+    changes: Object.keys(settings).join(", ")
+  };
+
+  db.collection("settings").doc("history").collection("logs").add(logEntry);
 
 
 </script>
@@ -785,6 +792,24 @@ function saveAdminSettings() {
   document.getElementById(id).style.display = "block";
   const activeBtn = document.getElementById(id + "Btn");
   if (activeBtn) activeBtn.classList.add("active-admin-tab");
+}
+// Chargement de l'historique admin
+const logContainer = document.getElementById("adminLogContainer");
+if (logContainer) {
+  db.collection("settings").doc("history").collection("logs")
+    .orderBy("date", "desc")
+    .limit(50)
+    .get().then(snapshot => {
+      logContainer.innerHTML = "";
+      snapshot.forEach(doc => {
+        const l = doc.data();
+        const item = document.createElement("p");
+        item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+        logContainer.appendChild(item);
+      });
+    }).catch(() => {
+      logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+    });
 }
 </script>
 </body>
