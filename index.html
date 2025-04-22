@@ -646,7 +646,7 @@ function closeModal(id) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  createStars(); // 🌟 Lance les étoiles magiques dès que la page est prête
+  createStars(); // 🌟 ajouté correctement
   // 🌟 Appliquer le réglage étoiles
  let starsMode = "auto"; // par défaut
 
@@ -720,6 +720,7 @@ if (logContainer) {
     }).catch(() => {
       logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
     });
+  }
   // ... tout ton code de chargement (stars, admin, mot magique, etc.)
 
   // 🔐 Bloc mot magique
@@ -734,24 +735,28 @@ if (logContainer) {
   } else {
     console.error("Firebase n'est pas chargé correctement.");
   }
-}
 });
 
 </script>
 <div class="stars" id="stars"></div>
 <script>
-  function createStars() {
-    const starsContainer = document.getElementById("stars");
-    for (let i = 0; i < 60; i++) {
-      const star = document.createElement("div");
-      star.className = "star";
-      star.style.top = Math.random() * 100 + "%";
-      star.style.left = Math.random() * 100 + "%";
-      star.style.animationDelay = Math.random() * 3 + "s";
-      star.style.animationDuration = 1 + Math.random() * 2 + "s";
-      starsContainer.appendChild(star);
-    }
+ function createStars() {
+  const starsContainer = document.getElementById("stars");
+  if (!starsContainer) return;
+  
+  starsContainer.style.display = "block"; // ← ✅ ici !
+  
+  for (let i = 0; i < 60; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.animationDelay = Math.random() * 3 + "s";
+    star.style.animationDuration = 1 + Math.random() * 2 + "s";
+    starsContainer.appendChild(star);
   }
+}
+
   // 🎁 Surprise cachée : tape "magic" dans la console
   window.addEventListener('keydown', (e) => {
     window.__secret = (window.__secret || '') + e.key;
@@ -773,20 +778,20 @@ if (logContainer) {
       window.__secret = '';
     }
   });
-	function switchAdminTab(id) {
-		const tabs = document.querySelectorAll(".admin-tab");
-		tabs.forEach(tab => tab.style.display = "none");
+  function switchAdminTab(id) {
+  const tabs = document.querySelectorAll(".admin-tab");
+  tabs.forEach(tab => tab.style.display = "none");
 
-		const buttons = ["tabMagicBtn", "tabSettingsBtn", "tabLogBtn"];
-		buttons.forEach(btn => {
-		const b = document.getElementById(btn);
-		if (b) b.classList.remove("active-admin-tab");
-	});
+  const buttons = ["tabMagicBtn", "tabSettingsBtn", "tabLogBtn"];
+  buttons.forEach(btn => {
+    const b = document.getElementById(btn);
+    if (b) b.classList.remove("active-admin-tab");
+  });
 
-		document.getElementById(id).style.display = "block";
-		const activeBtn = document.getElementById(id + "Btn");
-		if (activeBtn) activeBtn.classList.add("active-admin-tab");
-	}
+  document.getElementById(id).style.display = "block";
+  const activeBtn = document.getElementById(id + "Btn");
+  if (activeBtn) activeBtn.classList.add("active-admin-tab");
+}
 </script>
 </body>
 </html>
