@@ -721,6 +721,26 @@ if (logContainer) {
       logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
     });
   }
+  function loadAdminLogs() {
+  const logContainer = document.getElementById("adminLogContainer");
+  if (logContainer) {
+    db.collection("settings").doc("history").collection("logs")
+      .orderBy("date", "desc")
+      .limit(50)
+      .get().then(snapshot => {
+        logContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const l = doc.data();
+          const item = document.createElement("p");
+          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+          logContainer.appendChild(item);
+        });
+      }).catch(() => {
+        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+      });
+  }
+}
+
   // ... tout ton code de chargement (stars, admin, mot magique, etc.)
 
   // 🔐 Bloc mot magique
