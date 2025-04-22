@@ -809,6 +809,40 @@ if (logContainer) {
   const activeBtn = document.getElementById(id + "Btn");
   if (activeBtn) activeBtn.classList.add("active-admin-tab");
 }
+function saveAdminSettings() {
+  // 🔍 Récupérer les valeurs des champs
+  const settings = {
+    magicWord: document.getElementById("adminMagicWord")?.value.trim().toLowerCase() || "magic",
+    starsMode: document.getElementById("adminStarsMode")?.value || "auto",
+    popupMessage: document.getElementById("adminPopupMessage")?.value.trim() || "Tu as découvert le mot magique ✨"
+  };
+
+  // 💾 Enregistrer les réglages globaux dans Firestore
+  db.collection("settings").doc("global").set(settings).then(() => {
+    alert("✅ Paramètres enregistrés pour tous !");
+    closeModal("parametreAdmin");
+
+    // 🧠 Ajouter une ligne dans l’historique
+    const logEntry = {
+      user: window.connectedUser?.name || "inconnu",
+      role: window.connectedUser?.role || "non défini",
+      date: new Date().toLocaleDateString("fr-FR"),
+      time: new Date().toLocaleTimeString("fr-FR"),
+      changes: Object.keys(settings).join(", ")
+    };
+
+    // 🔐 Enregistrer dans la collection des logs
+    db.collection("settings").doc("history").collection("logs").add(logEntry).then(() => {
+      // 🔁 Recharger l’affichage de l’historique
+      loadAdminLogs();
+    });
+
+  }).catch((error) => {
+    console.error("❌ Erreur lors de l'enregistrement :", error);
+    alert("❌ Erreur lors de l'enregistrement.");
+  });
+}
+
 </script>
 </body>
 </html>
