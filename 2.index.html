@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e); /* thème sombre */
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f3f0ff;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    .container {
+      background: #292a3e;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #6c4db4;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .calendar-header button {
+      padding: 8px 12px;
+      background: #6c4db4;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+    .day {
+      color: #000;
+      background: #f3f3f3;
+      border-radius: 10px;
+      padding: 8px;
+      min-height: 80px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      position: relative;
+    }
+    .day.today {
+      border: 2px solid #ffd54f;
+      box-shadow: 0 0 10px #ffecb3;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+    .stream-info {
+      font-size: 0.8em;
+      margin-top: 6px;
+      padding: 2px 4px;
+      border-radius: 6px;
+      color: white;
+    }
+    .Minecraft { background-color: #81c784; }
+    .GTA { background-color: #64b5f6; }
+    .Chat { background-color: #f48fb1; }
+    .Test { background-color: #ffb74d; }
+    .Off { background-color: #ccc; color: #333; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadein 0.3s ease;
+    }
+    .modal-content {
+      background: #fff;
+      color: #222;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      animation: appear 0.4s ease;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes appear {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      color: #aaa;
+    }
+    .close-btn:hover {
+      color: #444;
+    }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #6c4db4;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      display: none;
+    }
+    @keyframes fadeWelcome {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  .stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 999;
+  }
+  .star {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: twinkle 2s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+  }
+  @media (max-width: 768px) {
+  /* 🗓️ Calendrier - Adaptation en mobile */
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 colonnes adaptatives */
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .calendar .day {
+    font-size: 0.7em;
+    padding: 5px;
+    min-height: auto;
+  }
+
+  .calendar .stream-info {
+    font-size: 0.65em;
+    word-break: break-word;
+  }
+
+  /* 📆 En-tête mois + boutons */
+  .calendar-header {
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .calendar-header button {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  /* ⚠️ Message d'avertissement */
+  .container > div[style*="border: 1px solid"] {
+    font-size: 0.75em;
+    padding: 6px 10px;
+    margin: 12px auto;
+  }
+
+  /* 🧙‍♀️ Zone mot magique + boutons en bas */
+  .container > div:last-of-type {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .container input[type="text"],
+  .container button {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    font-size: 0.9em;
+  }
+
+  /* ✨ Popup magique et autres modals */
+  .modal .modal-content {
+    width: 90%;
+    font-size: 0.9em;
+  }
+}
+	@media screen and (max-width: 600px) {
+  .modal-content {
+    width: 90% !important;
+    padding: 15px !important;
+    font-size: 0.95em;
+  }
+
+  .modal-content input,
+  .modal-content select,
+  .modal-content button {
+    width: 100% !important;
+    margin-top: 10px;
+    font-size: 1em;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2em;
+    text-align: center;
+  }
+
+  .modal-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.2em;
+  }
+}
+.active-admin-tab {
+  background: #8b5cf6;
+  color: white;
+  border-radius: 8px;
+}
+
+</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendrier des Streams leatvlive</title>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+<script>
+function toggleTheme() {
+  const body = document.body;
+  const container = document.querySelector(".container");
+  const isDark = body.classList.toggle("dark-mode");
+  if (isDark) {
+    body.style.background = "linear-gradient(135deg, #1a1a2e, #16213e)";
+    body.style.color = "#fff";
+    // Ne plus modifier la couleur des numéros des jours (on garde en noir)
+    if (container) container.style.background = "#292a3e";
+  } else {
+    body.style.background = "#f3f0ff";
+    body.style.color = "#222";
+    // Ne plus modifier la couleur des numéros des jours (on garde en noir)
+    if (container) container.style.background = "#ffffff";
+  }
+}
+  function toggleStars() {
+  const stars = document.getElementById("stars");
+  const btn = document.getElementById("toggleStarsBtn");
+  const isVisible = stars.style.display !== "none";
+
+  if (isVisible) {
+    stars.style.display = "none";
+    localStorage.setItem("starsVisible", "false");
+    btn.textContent = "✨ Activer les étoiles";
+  } else {
+    stars.style.display = "block";
+    localStorage.setItem("starsVisible", "true");
+    btn.textContent = "❌ Désactiver les étoiles";
+  }
+}
+function checkSecretWord() {
+  const input = document.getElementById("secretInput").value.trim().toLowerCase();
+  const correct = document.getElementById("secretHint").getAttribute("data-secret");
+  let tries = parseInt(localStorage.getItem("triesLeft") ?? "3");
+  if (input === correct) {
+    openModal("magicModal");
+    document.getElementById("secretInput").disabled = true;
+  } else {
+    tries--;
+    localStorage.setItem("triesLeft", tries);
+    if (tries <= 0) {
+      document.getElementById("secretInput").disabled = true;
+      alert("😢 Tu as utilisé tous tes essais pour aujourd’hui.");
+    } else {
+      alert(`❌ Mauvais mot. Il te reste ${tries} essais aujourd’hui.`);
+    }
+  }
+}
+</script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBI0e7UVfPb9_HimzEsqUF24PiJjuMO6WY",
+    authDomain: "planning-twitch-leatvlive.firebaseapp.com",
+    projectId: "planning-twitch-leatvlive",
+    storageBucket: "planning-twitch-leatvlive.firebasestorage.app",
+    messagingSenderId: "975502573700",
+    appId: "1:975502573700:web:a9c88741a6b476367d82d1",
+    measurementId: "G-TK7SY4TDSV"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+</head>
+<body>
+
+<!-- 🛠️ SECTION MODIFIABLE : Toutes les personnalisations ici -->
+<script>
+  // 🔒 Mot magique à deviner
+  const magicWord = "magic";
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("secretHint").setAttribute("data-secret", magicWord);
+  });
+
+  // 👤 Identifiants utilisateurs pour l'accès édition
+  const users = {
+  "admin": { pass: "mdpadmin", role: "admin" },
+  "leatv": { pass: "jhj#^$JAh7", role: "leatv" },
+  "modoco": { pass: "17Mai2024**", role: "modo" },
+  "modo__": { pass: "888888", role: "modo" }
+};
+</script>
+<!-- 🛠️ FIN SECTION MODIFIABLE -->
+
+  <div class="container">
+    <h1 id="month-year">✨ Calendrier des Streams leatvlive.tv</h1>
+	<div style="background: #fff4f4; border: 1px solid #ff6b6b; padding: 8px 12px; border-radius: 10px; color: #b00020; font-size: 0.75em; margin: 20px auto; text-align: center; max-width: 500px;">
+  ⚠️ Le planning est à titre informatif et n'engage à rien. Celui-ci peut être modifié à tout moment et ne pas être respecté à 100%. Merci à vous ⚠️
+</div>
+
+    <div class="calendar-header">
+      <button onclick="changeMonth(-1)">⬅️ Mois précédent</button>
+      <button id="authBtn" onclick="handleAuth()">🔒 Modifier le planning</button>
+      <button onclick="changeMonth(1)">Mois suivant ➡️</button>
+    </div>
+    <div class="calendar" id="calendar-days" style="min-height: 300px; border: 1px dashed #ccc; padding: 10px;"></div>
+	
+   <div style="display:flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+  <div>
+    <input id="secretInput" type="text" placeholder="Entre le mot magique"
+           style="padding:8px; border-radius:8px; border:1px solid #ccc;" />
+    <button onclick="checkSecretWord()" 
+            style="margin-left:10px; padding:8px 12px; border:none; border-radius:8px; background:#6c4db4; color:white; cursor:pointer;">
+      ✨ Valider
+    </button>
+  </div>
+<div id="secretHint" data-secret="magic" style="display:none;"></div>
+
+  <div style="display: flex; gap: 10px;">
+	<button onclick="openModal('settingsModal')" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    ⚙️ Paramètres
+  </button>
+  <button id="adminBtn" onclick="openModal('parametreAdmin')" style="display:none; background:#b04db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+  ⚙️ Admin
+</button>
+  </div>
+</div>
+
+<!-- Popup magique -->
+<div class="modal" id="magicModal" style="display:none">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('magicModal')">❌</span>
+    <h2>🌈 Félicitations !</h2>
+    <p>Tu as découvert le mot magique ✨<br>Une pluie d’étoiles t’accompagne !</p>
+  </div>
+</div>
+
+<!-- Le contenu HTML est géré dynamiquement via JavaScript Firebase Firestore -->
+<div class="modal" id="loginModal" style="display:none">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('loginModal')">❌</span>
+    <h2 id="authTitle">Connexion</h2>
+    <input type="text" id="loginUser" placeholder="Nom d'utilisateur" />
+    <input type="password" id="loginPass" placeholder="Code sécurisé" />
+    <button onclick="validateLogin()">✅ Valider</button>
+  </div>
+</div>
+<div class="modal" id="editModal" style="display:none">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('editModal')">❌</span>
+    <h2>Modifier le jour</h2>
+    <input type="text" id="title" placeholder="Titre du stream" />
+    <select id="type">
+      <option value="Minecraft">Minecraft</option>
+      <option value="GTA">GTA RP</option>
+      <option value="Chat">Just Chatting</option>
+      <option value="Test">Test/Setup</option>
+      <option value="Off">Off/Pause</option>
+    </select>
+    <select id="hour">
+      <option value="13h00">13h00</option>
+      <option value="15h00">15h00</option>
+      <option value="18h00">18h00</option>
+      <option value="20h00">20h00</option>
+      <option value="--h--">--h--</option>
+    </select>
+    <button onclick="saveEdit()">💾</button>
+    <button onclick="deleteDay()">🗑️</button>
+  </div>
+</div>
+<!-- Popup Paramètres -->
+<div class="modal" id="settingsModal" style="display:none">
+  <div class="modal-content" style="width: 400px; padding: 20px; border-radius: 16px;">
+    <span class="close-btn" onclick="closeModal('settingsModal')">❌</span>
+    <h2>⚙️ Paramètres</h2>
+	<p>Tu peux personnaliser ton expérience magique ici ✨</p>
+<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+  <button onclick="toggleStars()" id="toggleStarsBtn" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    ✨ Activer les étoiles
+  </button>
+  <p id="starsLockedMsg" style="display:none; color: #b00020; font-size: 0.8em; margin-top: 4px;">
+  ⚠️ Cette option est bloquée par l’admin 😓
+</p>
+
+  <button onclick="toggleTheme()" style="background:#6c4db4; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+    🎨 Mode Sombre / Clair
+  </button>
+</div>
+    <!-- Les options arriveront ici ensuite -->
+  </div>
+</div>
+<!-- Popup Paramètres Admin -->
+<div class="modal" id="parametreAdmin" style="display:none">
+  <div class="modal-content" style="background: #4b1f5a; color: white; border-radius: 16px; padding: 20px; min-width: 300px;">
+    <span class="close-btn" onclick="closeModal('parametreAdmin')">❌</span>
+    <h2>🛠️ Paramètres Admin</h2>
+
+    <!-- Onglets -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+      <button onclick="switchAdminTab('tabMagic')" id="tabMagicBtn" style="flex:1">🪄 Mot magique</button>
+      <button onclick="switchAdminTab('tabSettings')" id="tabSettingsBtn" style="flex:1">⚙️ Paramètres</button>
+      <button onclick="switchAdminTab('tabLog')" id="tabLogBtn" style="flex:1">📋 Historique</button>
+    </div>
+
+    <!-- Contenus -->
+<div id="tabMagic" class="admin-tab">
+  <label>🔒 Mot magique global</label>
+  <input type="text" id="adminMagicWord" placeholder="Ex: licorne"
+         style="padding:6px; border-radius:8px; border:none; margin-bottom:10px; width:100%;" />
+
+  <label>✨ Texte du popup magique</label>
+  <textarea id="adminPopupMessage" rows="4"
+            style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;"></textarea>
+
+  <button onclick="saveAdminSettings()"
+          style="padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+    💾
+  </button>
+</div>
+<div id="tabSettings" class="admin-tab" style="display:none;">
+  <label>🌟 Étoiles magiques forcées</label>
+  <select id="adminStarsMode" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;">
+    <option value="auto">Auto (chaque utilisateur)</option>
+    <option value="on">Forcé : Activées</option>
+    <option value="off">Forcé : Désactivées</option>
+  </select>
+  <button onclick="saveAdminSettings()" style="margin-top: 10px; padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+    💾
+  </button>
+</div>
+<div id="tabLog" class="admin-tab" style="display:none;">
+  <div id="adminLogContainer" style="max-height: 300px; overflow-y: auto; font-size: 0.9em;">
+    <p>Chargement de l'historique...</p>
+  </div>
+</div>
+<script>
+let editUnlocked = false;
+let failedAttempts = 0;
+let lockoutUntil = null;
+let currentDate = new Date();
+let selectedDay = null;
+
+function getKey(year, month) {
+  return `${year}-${month + 1}`;
+}
+
+let unsubscribe = null;
+
+function listenToData(key) {
+  const ref = db.collection("plannings").doc(key);
+  if (unsubscribe) unsubscribe(); // Arrêter l’écoute précédente
+  unsubscribe = ref.onSnapshot((doc) => {
+    const data = doc.exists ? doc.data() : {};
+    createCalendar(currentDate, data);
+  });
+}
+
+
+async function saveData(key, data) {
+  const ref = db.collection("plannings").doc(key);
+  await ref.set(data);
+}
+async function getDataOnce(key) {
+  const ref = db.collection("plannings").doc(key);
+  const snap = await ref.get();
+  return snap.exists ? snap.data() : {};
+}
+
+async function deleteDay() {
+  const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
+  const ref = db.collection("plannings").doc(key);
+  await ref.update({ [selectedDay]: firebase.firestore.FieldValue.delete() });
+  closeModal("editModal");
+  createCalendar(currentDate);
+}
+
+async function saveEdit() {
+  if (selectedDay === null) return;
+  const title = document.getElementById("title").value.trim();
+  const type = document.getElementById("type").value;
+  const hour = document.getElementById("hour").value;
+  const key = getKey(currentDate.getFullYear(), currentDate.getMonth());
+  const data = await getDataOnce(key);
+
+  data[selectedDay] = { title, type, hour };
+  await saveData(key, data);
+  closeModal("editModal");
+  createCalendar(currentDate);
+}
+
+function createCalendar(date, data = null) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  if (!data) return; // On attend que le listener fournisse les données
+  const container = document.getElementById("calendar-days");
+
+  container.innerHTML = "";
+  document.getElementById("month-year").textContent =
+    `✨ Calendrier des Streams leatvlive.tv – ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][month]} ${year}`;
+
+  for (let i = 1; i < (firstDay === 0 ? 7 : firstDay); i++) {
+    const empty = document.createElement("div");
+    empty.className = "day empty";
+    container.appendChild(empty);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const div = document.createElement("div");
+    div.className = "day";
+    div.dataset.day = day;
+    div.innerHTML = `<strong style='color: inherit;'>${day}</strong>`;
+
+    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+      div.classList.add("today");
+    }
+
+    if (data[day.toString()]) {
+      const d = data[day.toString()];
+      const info = document.createElement("div");
+      info.className = `stream-info ${d.type}`;
+      const title = d.title?.trim();
+      const hour = d.hour || "";
+      const type = d.type || "Off";
+      if (type === "Off") {
+        info.innerHTML = `<small>Jour Off</small>`;
+        div.style.opacity = 0.5;
+      } else {
+        info.innerHTML = `${title ? title + '<br>' : ''}<small>${type}${hour ? ` à ${hour}` : ''}</small>`;
+      }
+      div.appendChild(info);
+    }
+
+    div.onclick = () => {
+      if (!editUnlocked) return;
+      selectedDay = day;
+      openModal('editModal');
+      const d = data[day.toString()] || {};
+      document.getElementById("title").value = d.title || "";
+      document.getElementById("type").value = d.type || "Minecraft";
+      document.getElementById("hour").value = d.hour || "20h00";
+    };
+
+    container.appendChild(div);
+  }
+}
+
+function changeMonth(delta) {
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  listenToData(getKey(currentDate.getFullYear(), currentDate.getMonth()));
+}
+
+function handleAuth() {
+  document.getElementById("authTitle").textContent = editUnlocked ? "Déconnexion" : "Connexion";
+  openModal("loginModal");
+}
+
+function validateLogin() {
+  const user = document.getElementById("loginUser").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+
+  if (users[user] && users[user].pass === pass) {
+    const role = users[user].role;
+    window.connectedUser = { name: user, role };
+
+    // Changer bouton admin en fonction du rôle
+    const adminBtn = document.getElementById("adminBtn");
+    if (adminBtn) {
+      adminBtn.style.display = (role === "admin" || role === "leatv") ? "inline-block" : "none";
+    }
+
+    closeModal("loginModal");
+    editUnlocked = true;
+    document.getElementById("authBtn").textContent = "🚪 Déconnexion";
+
+    alert("🔓 Accès débloqué !");
+    failedAttempts = 0;
+  } else {
+    failedAttempts++;
+    if (failedAttempts >= 3) {
+      lockoutUntil = Date.now() + 10 * 60 * 1000;
+      alert("Trop de tentatives ! Réessaie dans 10 minutes.");
+      closeModal("loginModal");
+    } else {
+      alert("Identifiants incorrects !");
+    }
+  }
+}
+
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  // 🌟 Appliquer le réglage étoiles
+ let starsMode = "auto"; // par défaut
+
+db.collection("settings").doc("global").get().then((doc) => {
+  if (doc.exists) {
+    const settings = doc.data();
+    starsMode = settings.starsMode || "auto";
+
+    // 🌟 Application du forçage étoile
+    const stars = document.getElementById("stars");
+    if (stars) {
+      if (starsMode === "off") {
+        stars.style.display = "none";
+      } else if (starsMode === "on") {
+        stars.style.display = "block";
+      } else {
+        // mode auto → on applique localStorage
+        const starsVisible = localStorage.getItem("starsVisible") !== "false";
+        stars.style.display = starsVisible ? "block" : "none";
+        const btn = document.getElementById("toggleStarsBtn");
+        if (btn) {
+          btn.textContent = starsVisible ? "❌ Désactiver les étoiles" : "✨ Activer les étoiles";
+        }
+      }
+    }
+	const warning = document.getElementById("starsLockedMsg");
+if (warning) {
+  warning.style.display = (starsMode === "on" || starsMode === "off") ? "block" : "none";
+}
+const btn = document.getElementById("toggleStarsBtn");
+if (btn) {
+  if (starsMode === "on" || starsMode === "off") {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    btn.title = "Option désactivée par l'admin";
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.title = "";
+  }
+}
+    // reste inchangé...
+    const sm = document.getElementById("adminStarsMode");
+    if (sm) sm.value = starsMode;
+
+    const mw = document.getElementById("adminMagicWord");
+    if (mw) mw.value = settings.magicWord || "";
+    document.getElementById("secretHint").setAttribute("data-secret", settings.magicWord || "magic");
+
+    const popupMsg = settings.popupMessage || "Tu as découvert le mot magique ✨<br>Une pluie d’étoiles t’accompagne !";
+    const pm = document.getElementById("adminPopupMessage");
+    if (pm) pm.value = popupMsg;
+    const magicModal = document.querySelector("#magicModal p");
+    if (magicModal) magicModal.innerHTML = popupMsg;
+  }
+});
+// Chargement de l'historique admin
+const logContainer = document.getElementById("adminLogContainer");
+if (logContainer) {
+  db.collection("settings").doc("history").collection("logs")
+    .orderBy("date", "desc")
+    .limit(50)
+    .get().then(snapshot => {
+      logContainer.innerHTML = "";
+      snapshot.forEach(doc => {
+        const l = doc.data();
+        const item = document.createElement("p");
+        item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+        logContainer.appendChild(item);
+      });
+    }).catch(() => {
+      logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+    });
+  // ... tout ton code de chargement (stars, admin, mot magique, etc.)
+
+  // 🔐 Bloc mot magique
+  const triesLeft = localStorage.getItem("triesLeft") ?? 3;
+  if (triesLeft === "0") {
+    document.getElementById("secretInput").disabled = true;
+  }
+
+  // 📆 Création / Écoute calendrier
+  if (typeof db !== 'undefined') {
+    listenToData(getKey(currentDate.getFullYear(), currentDate.getMonth()));
+  } else {
+    console.error("Firebase n'est pas chargé correctement.");
+  }
+
+  // ✅ 🔁 Chargement de l'historique admin
+  const logContainer = document.getElementById("adminLogContainer");
+  if (logContainer) {
+    db.collection("settings").doc("history").collection("logs")
+      .orderBy("date", "desc")
+      .limit(50)
+      .get().then(snapshot => {
+        logContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const l = doc.data();
+          const item = document.createElement("p");
+          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+          logContainer.appendChild(item);
+        });
+      }).catch(() => {
+        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+      });
+  }
+}); // ✅ cette ligne doit être là, à la toute fin
+
+</script>
+<div class="stars" id="stars"></div>
+<script>
+  function createStars() {
+    const starsContainer = document.getElementById("stars");
+    for (let i = 0; i < 60; i++) {
+      const star = document.createElement("div");
+      star.className = "star";
+      star.style.top = Math.random() * 100 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      star.style.animationDelay = Math.random() * 3 + "s";
+      star.style.animationDuration = 1 + Math.random() * 2 + "s";
+      starsContainer.appendChild(star);
+    }
+  }
+  createStars();
+
+  // 🎁 Surprise cachée : tape "magic" dans la console
+  window.addEventListener('keydown', (e) => {
+    window.__secret = (window.__secret || '') + e.key;
+    if (window.__secret.endsWith('magic')) {
+      alert('✨ Une surprise magique apparaît !');
+      const surprise = document.createElement('div');
+      surprise.textContent = "🌈 Tu as trouvé l'étoile secrète !";
+      surprise.style.position = 'fixed';
+      surprise.style.bottom = '20px';
+      surprise.style.right = '20px';
+      surprise.style.padding = '10px 20px';
+      surprise.style.background = '#ff69b4';
+      surprise.style.color = '#fff';
+      surprise.style.borderRadius = '12px';
+      surprise.style.boxShadow = '0 0 15px rgba(255, 105, 180, 0.5)';
+      surprise.style.zIndex = '1001';
+      document.body.appendChild(surprise);
+      setTimeout(() => surprise.remove(), 6000);
+      window.__secret = '';
+    }
+  });
+  function switchAdminTab(id) {
+  const tabs = document.querySelectorAll(".admin-tab");
+  tabs.forEach(tab => tab.style.display = "none");
+
+  const buttons = ["tabMagicBtn", "tabSettingsBtn", "tabLogBtn"];
+  buttons.forEach(btn => {
+    const b = document.getElementById(btn);
+    if (b) b.classList.remove("active-admin-tab");
+  });
+
+  document.getElementById(id).style.display = "block";
+  const activeBtn = document.getElementById(id + "Btn");
+  if (activeBtn) activeBtn.classList.add("active-admin-tab");
+}
+</script>
+</body>
+</html>
