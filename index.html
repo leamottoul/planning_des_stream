@@ -646,6 +646,7 @@ function closeModal(id) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  createStars(); // 🌟 Lance les étoiles magiques dès que la page est prête
   // 🌟 Appliquer le réglage étoiles
  let starsMode = "auto"; // par défaut
 
@@ -751,8 +752,6 @@ if (logContainer) {
       starsContainer.appendChild(star);
     }
   }
-  createStars();
-
   // 🎁 Surprise cachée : tape "magic" dans la console
   window.addEventListener('keydown', (e) => {
     window.__secret = (window.__secret || '') + e.key;
