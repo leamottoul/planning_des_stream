@@ -253,50 +253,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendrier des Streams leatvlive</title>
-  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js">
-function loadAdminLogs() {
-  const logContainer = document.getElementById("adminLogContainer");
-  if (logContainer) {
-    db.collection("settings").doc("history").collection("logs")
-      .orderBy("date", "desc")
-      .limit(50)
-      .get().then(snapshot => {
-        logContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const l = doc.data();
-          const item = document.createElement("p");
-          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-          logContainer.appendChild(item);
-        });
-      }).catch(() => {
-        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-      });
-  }
-}
-
-</script>
-<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js">
-function loadAdminLogs() {
-  const logContainer = document.getElementById("adminLogContainer");
-  if (logContainer) {
-    db.collection("settings").doc("history").collection("logs")
-      .orderBy("date", "desc")
-      .limit(50)
-      .get().then(snapshot => {
-        logContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const l = doc.data();
-          const item = document.createElement("p");
-          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-          logContainer.appendChild(item);
-        });
-      }).catch(() => {
-        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-      });
-  }
-}
-
-</script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
 <script>
 function toggleTheme() {
   const body = document.body;
@@ -347,27 +305,6 @@ function checkSecretWord() {
     }
   }
 }
-
-function loadAdminLogs() {
-  const logContainer = document.getElementById("adminLogContainer");
-  if (logContainer) {
-    db.collection("settings").doc("history").collection("logs")
-      .orderBy("date", "desc")
-      .limit(50)
-      .get().then(snapshot => {
-        logContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const l = doc.data();
-          const item = document.createElement("p");
-          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-          logContainer.appendChild(item);
-        });
-      }).catch(() => {
-        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-      });
-  }
-}
-
 </script>
 <script>
   const firebaseConfig = {
@@ -381,27 +318,6 @@ function loadAdminLogs() {
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-
-function loadAdminLogs() {
-  const logContainer = document.getElementById("adminLogContainer");
-  if (logContainer) {
-    db.collection("settings").doc("history").collection("logs")
-      .orderBy("date", "desc")
-      .limit(50)
-      .get().then(snapshot => {
-        logContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const l = doc.data();
-          const item = document.createElement("p");
-          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-          logContainer.appendChild(item);
-        });
-      }).catch(() => {
-        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-      });
-  }
-}
-
 </script>
 </head>
 <body>
@@ -421,27 +337,6 @@ function loadAdminLogs() {
   "modoco": { pass: "17Mai2024**", role: "modo" },
   "modo__": { pass: "888888", role: "modo" }
 };
-
-function loadAdminLogs() {
-  const logContainer = document.getElementById("adminLogContainer");
-  if (logContainer) {
-    db.collection("settings").doc("history").collection("logs")
-      .orderBy("date", "desc")
-      .limit(50)
-      .get().then(snapshot => {
-        logContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const l = doc.data();
-          const item = document.createElement("p");
-          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-          logContainer.appendChild(item);
-        });
-      }).catch(() => {
-        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-      });
-  }
-}
-
 </script>
 <!-- 🛠️ FIN SECTION MODIFIABLE -->
 
@@ -706,13 +601,85 @@ function changeMonth(delta) {
 }
 
 function handleAuth() {
-  document.getElementById("authTitle").textContent = editUnlocked ? "Déconnexion" : "Connexion";
-  openModal("loginModal");
+  // Si l'utilisateur est déjà connecté
+  if (editUnlocked) {
+    // Demander confirmation
+    const confirmLogout = confirm("🔐 Tu es déjà connectée.\nSouhaites-tu te déconnecter ?");
+    if (confirmLogout) {
+      editUnlocked = false;
+      window.connectedUser = null;
+      document.getElementById("authBtn").textContent = "🔒 Modifier le planning";
+
+      const adminBtn = document.getElementById("adminBtn");
+      if (adminBtn) adminBtn.style.display = "none";
+
+      alert("🌙 Tu es maintenant déconnectée du planning magique. À bientôt Léa !");
+
+      // 🔁 Enregistrer la déconnexion dans l’historique
+      const logEntry = {
+        user: "Déconnexion",
+        role: "-",
+        date: new Date().toLocaleDateString("fr-FR"),
+        time: new Date().toLocaleTimeString("fr-FR"),
+        changes: "Utilisateur déconnecté"
+      };
+      db.collection("settings").doc("history").collection("logs").add(logEntry).then(() => {
+        loadAdminLogs();
+      });
+    }
+  } else {
+    // Sinon, ouvrir le popup login
+    document.getElementById("authTitle").textContent = "Connexion";
+    openModal("loginModal");
+  }
 }
+
 
 function validateLogin() {
   const user = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
+
+  if (users[user] && users[user].pass === pass) {
+    const role = users[user].role;
+    window.connectedUser = { name: user, role };
+    editUnlocked = true;
+
+    closeModal("loginModal");
+    document.getElementById("authBtn").textContent = "🚪 Déconnexion";
+
+    const adminBtn = document.getElementById("adminBtn");
+    if (adminBtn) {
+      adminBtn.style.display = (role === "admin" || role === "leatv") ? "inline-block" : "none";
+    }
+
+    alert("🔓 Accès débloqué !");
+
+    // 📝 Log de la connexion dans l'historique
+    const logEntry = {
+      user: user,
+      role: role,
+      date: new Date().toLocaleDateString("fr-FR"),
+      time: new Date().toLocaleTimeString("fr-FR"),
+      changes: "Connexion réussie"
+    };
+    db.collection("settings").doc("history").collection("logs").add(logEntry).then(() => {
+      loadAdminLogs();
+    });
+
+    failedAttempts = 0;
+
+  } else {
+    failedAttempts++;
+    if (failedAttempts >= 3) {
+      lockoutUntil = Date.now() + 10 * 60 * 1000;
+      alert("Trop de tentatives ! Réessaie dans 10 minutes.");
+      closeModal("loginModal");
+    } else {
+      alert("Identifiants incorrects !");
+    }
+  }
+}
+
 
   if (users[user] && users[user].pass === pass) {
     const role = users[user].role;
@@ -826,6 +793,26 @@ if (logContainer) {
       logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
     });
   }
+  function loadAdminLogs() {
+  const logContainer = document.getElementById("adminLogContainer");
+  if (logContainer) {
+    db.collection("settings").doc("history").collection("logs")
+      .orderBy("date", "desc")
+      .limit(50)
+      .get().then(snapshot => {
+        logContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const l = doc.data();
+          const item = document.createElement("p");
+          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+          logContainer.appendChild(item);
+        });
+      }).catch(() => {
+        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+      });
+  }
+}
+
   // ... tout ton code de chargement (stars, admin, mot magique, etc.)
 
   // 🔐 Bloc mot magique
@@ -894,25 +881,33 @@ if (logContainer) {
   const activeBtn = document.getElementById(id + "Btn");
   if (activeBtn) activeBtn.classList.add("active-admin-tab");
 }
+function saveAdminSettings() {
+  const settings = {
+    magicWord: document.getElementById("adminMagicWord")?.value.trim().toLowerCase() || "magic",
+    starsMode: document.getElementById("adminStarsMode")?.value || "auto",
+    popupMessage: document.getElementById("adminPopupMessage")?.value.trim() || "Tu as découvert le mot magique ✨"
+  };
 
-function loadAdminLogs() {
-  const logContainer = document.getElementById("adminLogContainer");
-  if (logContainer) {
-    db.collection("settings").doc("history").collection("logs")
-      .orderBy("date", "desc")
-      .limit(50)
-      .get().then(snapshot => {
-        logContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const l = doc.data();
-          const item = document.createElement("p");
-          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-          logContainer.appendChild(item);
-        });
-      }).catch(() => {
-        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-      });
-  }
+  db.collection("settings").doc("global").set(settings).then(() => {
+    alert("✅ Paramètres enregistrés pour tous !");
+    closeModal("parametreAdmin");
+
+    const logEntry = {
+      user: window.connectedUser?.name || "inconnu",
+      role: window.connectedUser?.role || "non défini",
+      date: new Date().toLocaleDateString("fr-FR"),
+      time: new Date().toLocaleTimeString("fr-FR"),
+      changes: Object.keys(settings).join(", ")
+    };
+
+    db.collection("settings").doc("history").collection("logs").add(logEntry).then(() => {
+      loadAdminLogs();
+    });
+
+  }).catch((error) => {
+    console.error("❌ Erreur :", error);
+    alert("❌ Erreur lors de l'enregistrement.");
+  });
 }
 
 </script>
