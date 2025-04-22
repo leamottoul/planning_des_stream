@@ -719,6 +719,9 @@ if (logContainer) {
     }).catch(() => {
       logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
     });
+  window.addEventListener("DOMContentLoaded", () => {
+  // ... tout ton code de chargement (stars, admin, mot magique, etc.)
+
   // 🔐 Bloc mot magique
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
   if (triesLeft === "0") {
@@ -731,33 +734,27 @@ if (logContainer) {
   } else {
     console.error("Firebase n'est pas chargé correctement.");
   }
-});
-function saveAdminSettings() {
-  const settings = {
-    magicWord: document.getElementById("adminMagicWord").value.trim().toLowerCase(),
-    starsMode: document.getElementById("adminStarsMode").value,
-    popupMessage: document.getElementById("adminPopupMessage").value.trim()
-  };
 
-  db.collection("settings").doc("global").set(settings).then(() => {
-    alert("✅ Paramètres enregistrés pour tous !");
-    closeModal("parametreAdmin");
+  // ✅ 🔁 Chargement de l'historique admin
+  const logContainer = document.getElementById("adminLogContainer");
+  if (logContainer) {
+    db.collection("settings").doc("history").collection("logs")
+      .orderBy("date", "desc")
+      .limit(50)
+      .get().then(snapshot => {
+        logContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const l = doc.data();
+          const item = document.createElement("p");
+          item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+          logContainer.appendChild(item);
+        });
+      }).catch(() => {
+        logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+      });
+  }
+}); // ✅ cette ligne doit être là, à la toute fin
 
-    // ✅ Historique ici dans le .then
-    const logEntry = {
-      user: window.connectedUser?.name || "inconnu",
-      role: window.connectedUser?.role || "non défini",
-      date: new Date().toLocaleDateString("fr-FR"),
-      time: new Date().toLocaleTimeString("fr-FR"),
-      changes: Object.keys(settings).join(", ")
-    };
-
-    db.collection("settings").doc("history").collection("logs").add(logEntry);
-  }).catch((error) => {
-    console.error("Erreur sauvegarde admin :", error);
-    alert("❌ Erreur lors de l'enregistrement.");
-  });
-}
 </script>
 <div class="stars" id="stars"></div>
 <script>
