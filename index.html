@@ -773,20 +773,20 @@ if (logContainer) {
       window.__secret = '';
     }
   });
-  function switchAdminTab(id) {
-  const tabs = document.querySelectorAll(".admin-tab");
-  tabs.forEach(tab => tab.style.display = "none");
+	function switchAdminTab(id) {
+		const tabs = document.querySelectorAll(".admin-tab");
+		tabs.forEach(tab => tab.style.display = "none");
 
-  const buttons = ["tabMagicBtn", "tabSettingsBtn", "tabLogBtn"];
-  buttons.forEach(btn => {
-    const b = document.getElementById(btn);
-    if (b) b.classList.remove("active-admin-tab");
-  });
+		const buttons = ["tabMagicBtn", "tabSettingsBtn", "tabLogBtn"];
+		buttons.forEach(btn => {
+		const b = document.getElementById(btn);
+		if (b) b.classList.remove("active-admin-tab");
+	});
 
-  document.getElementById(id).style.display = "block";
-  const activeBtn = document.getElementById(id + "Btn");
-  if (activeBtn) activeBtn.classList.add("active-admin-tab");
-});
+		document.getElementById(id).style.display = "block";
+		const activeBtn = document.getElementById(id + "Btn");
+		if (activeBtn) activeBtn.classList.add("active-admin-tab");
+	}
 </script>
 </body>
 </html>
