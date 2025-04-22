@@ -702,6 +702,23 @@ if (btn) {
     if (magicModal) magicModal.innerHTML = popupMsg;
   }
 });
+// Chargement de l'historique admin
+const logContainer = document.getElementById("adminLogContainer");
+if (logContainer) {
+  db.collection("settings").doc("history").collection("logs")
+    .orderBy("date", "desc")
+    .limit(50)
+    .get().then(snapshot => {
+      logContainer.innerHTML = "";
+      snapshot.forEach(doc => {
+        const l = doc.data();
+        const item = document.createElement("p");
+        item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
+        logContainer.appendChild(item);
+      });
+    }).catch(() => {
+      logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
+    });
   // 🔐 Bloc mot magique
   const triesLeft = localStorage.getItem("triesLeft") ?? 3;
   if (triesLeft === "0") {
@@ -792,24 +809,6 @@ function saveAdminSettings() {
   document.getElementById(id).style.display = "block";
   const activeBtn = document.getElementById(id + "Btn");
   if (activeBtn) activeBtn.classList.add("active-admin-tab");
-}
-// Chargement de l'historique admin
-const logContainer = document.getElementById("adminLogContainer");
-if (logContainer) {
-  db.collection("settings").doc("history").collection("logs")
-    .orderBy("date", "desc")
-    .limit(50)
-    .get().then(snapshot => {
-      logContainer.innerHTML = "";
-      snapshot.forEach(doc => {
-        const l = doc.data();
-        const item = document.createElement("p");
-        item.innerHTML = `📅 ${l.date} ${l.time} – <strong>${l.user}</strong> (${l.role}) ➜ ${l.changes}`;
-        logContainer.appendChild(item);
-      });
-    }).catch(() => {
-      logContainer.innerHTML = "<p>❌ Erreur lors du chargement de l'historique.</p>";
-    });
 }
 </script>
 </body>
