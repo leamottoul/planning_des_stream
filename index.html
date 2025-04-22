@@ -725,22 +725,22 @@ function saveAdminSettings() {
   db.collection("settings").doc("global").set(settings).then(() => {
     alert("✅ Paramètres enregistrés pour tous !");
     closeModal("parametreAdmin");
+
+    // ✅ Historique ici dans le .then
+    const logEntry = {
+      user: window.connectedUser?.name || "inconnu",
+      role: window.connectedUser?.role || "non défini",
+      date: new Date().toLocaleDateString("fr-FR"),
+      time: new Date().toLocaleTimeString("fr-FR"),
+      changes: Object.keys(settings).join(", ")
+    };
+
+    db.collection("settings").doc("history").collection("logs").add(logEntry);
   }).catch((error) => {
     console.error("Erreur sauvegarde admin :", error);
     alert("❌ Erreur lors de l'enregistrement.");
   });
 }
-  const logEntry = {
-    user: window.connectedUser?.name || "inconnu",
-    role: window.connectedUser?.role || "non défini",
-    date: new Date().toLocaleDateString("fr-FR"),
-    time: new Date().toLocaleTimeString("fr-FR"),
-    changes: Object.keys(settings).join(", ")
-  };
-
-  db.collection("settings").doc("history").collection("logs").add(logEntry);
-
-
 </script>
 <div class="stars" id="stars"></div>
 <script>
