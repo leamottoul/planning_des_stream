@@ -327,7 +327,12 @@ function checkSecretWord() {
 
   // 👤 Identifiants utilisateurs pour l'accès édition
   const users = {
-    "leatv": "jhj#^$JAh7"
+  "admin": { pass: "mdpadmin", role: "admin" },
+  "leatv": { pass: "mdpleatv", role: "leatv" },
+  "modoluna": { pass: "gtaluna", role: "modo" },
+  "modojohn": { pass: "rpjohn", role: "modo" }
+};
+
   };
 </script>
 <!-- 🛠️ FIN SECTION MODIFIABLE -->
@@ -581,7 +586,15 @@ function validateLogin() {
   const user = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
 
-  if (users[user] && users[user] === pass) {
+if (users[user] && users[user].pass === pass) {
+const role = users[user].role;
+window.connectedUser = { name: user, role };
+
+// Changer bouton admin en fonction du rôle
+const adminBtn = document.getElementById("adminBtn");
+if (adminBtn) {
+  adminBtn.style.display = (role === "admin" || role === "leatv") ? "inline-block" : "none";
+}
     closeModal("loginModal");
     editUnlocked = !editUnlocked;
     document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
