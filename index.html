@@ -243,6 +243,11 @@
     font-size: 1.2em;
   }
 }
+.active-admin-tab {
+  background: #8b5cf6;
+  color: white;
+  border-radius: 8px;
+}
 
 </style>
   <meta charset="UTF-8" />
@@ -434,26 +439,36 @@ function checkSecretWord() {
 </div>
 <!-- Popup Paramètres Admin -->
 <div class="modal" id="parametreAdmin" style="display:none">
-  <div class="modal-content" style="background: #4b1f5a; color: white; border-radius: 16px; padding: 20px;">
+  <div class="modal-content" style="background: #4b1f5a; color: white; border-radius: 16px; padding: 20px; min-width: 300px;">
     <span class="close-btn" onclick="closeModal('parametreAdmin')">❌</span>
     <h2>🛠️ Paramètres Admin</h2>
 
-    <label>🔒 Mot magique global</label>
-    <input type="text" id="adminMagicWord" placeholder="Ex: licorne" style="padding:6px; border-radius:8px; border:none; margin-bottom:10px; width:100%;" />
+    <!-- Onglets -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+      <button onclick="switchAdminTab('tabMagic')" id="tabMagicBtn" style="flex:1">🪄 Mot magique</button>
+      <button onclick="switchAdminTab('tabSettings')" id="tabSettingsBtn" style="flex:1">⚙️ Paramètres</button>
+      <button onclick="switchAdminTab('tabLog')" id="tabLogBtn" style="flex:1">📋 Historique</button>
+    </div>
 
-    <label>🌟 Étoiles magiques forcées</label>
-    <select id="adminStarsMode" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;">
-      <option value="auto">Auto (chaque utilisateur)</option>
-      <option value="on">Forcé : Activées</option>
-      <option value="off">Forcé : Désactivées</option>
-    </select>
+    <!-- Contenus -->
+<div id="tabMagic" class="admin-tab">
+  <label>🔒 Mot magique global</label>
+  <input type="text" id="adminMagicWord" placeholder="Ex: licorne"
+         style="padding:6px; border-radius:8px; border:none; margin-bottom:10px; width:100%;" />
 
-    <label>✨ Texte du popup magique</label>
-    <textarea id="adminPopupMessage" rows="4" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;"></textarea>
+  <label>✨ Texte du popup magique</label>
+  <textarea id="adminPopupMessage" rows="4"
+            style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;"></textarea>
 
-    <button onclick="saveAdminSettings()" style="padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
-      💾 Enregistrer les réglages
-    </button>
+  <button onclick="saveAdminSettings()"
+          style="padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+    💾 Enregistrer les réglages
+  </button>
+</div>
+
+    <div id="tabSettings" class="admin-tab" style="display:none;">Contenu des Paramètres (à venir)</div>
+    <div id="tabLog" class="admin-tab" style="display:none;">Contenu Historique (à venir)</div>
+
   </div>
 </div>
 <script>
@@ -745,6 +760,20 @@ function saveAdminSettings() {
       window.__secret = '';
     }
   });
+  function switchAdminTab(id) {
+  const tabs = document.querySelectorAll(".admin-tab");
+  tabs.forEach(tab => tab.style.display = "none");
+
+  const buttons = ["tabMagicBtn", "tabSettingsBtn", "tabLogBtn"];
+  buttons.forEach(btn => {
+    const b = document.getElementById(btn);
+    if (b) b.classList.remove("active-admin-tab");
+  });
+
+  document.getElementById(id).style.display = "block";
+  const activeBtn = document.getElementById(id + "Btn");
+  if (activeBtn) activeBtn.classList.add("active-admin-tab");
+}
 </script>
 </body>
 </html>
