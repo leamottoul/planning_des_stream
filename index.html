@@ -321,7 +321,7 @@ function checkSecretWord() {
 </script>
 </head>
 <body>
-
+<div class="stars" id="stars"></div>
 <!-- 🛠️ SECTION MODIFIABLE : Toutes les personnalisations ici -->
 <script>
   // 🔒 Mot magique à deviner
@@ -737,9 +737,6 @@ if (logContainer) {
   }
 });
 
-</script>
-<div class="stars" id="stars"></div>
-<script>
  function createStars() {
   const starsContainer = document.getElementById("stars");
   if (!starsContainer) return;
