@@ -596,9 +596,6 @@ if (adminBtn) {
     closeModal("loginModal");
     editUnlocked = !editUnlocked;
     document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
-	const adminBtn = document.getElementById("adminBtn");
-if (adminBtn) {
-  adminBtn.style.display = editUnlocked ? "inline-block" : "none";
 }
 
     alert(editUnlocked ? "🔓 Accès débloqué !" : "🌙 Déconnectée. À bientôt Léa !");
