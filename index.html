@@ -584,21 +584,21 @@ function validateLogin() {
   const user = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
 
-if (users[user] && users[user].pass === pass) {
-const role = users[user].role;
-window.connectedUser = { name: user, role };
+  if (users[user] && users[user].pass === pass) {
+    const role = users[user].role;
+    window.connectedUser = { name: user, role };
 
-// Changer bouton admin en fonction du rôle
-const adminBtn = document.getElementById("adminBtn");
-if (adminBtn) {
-  adminBtn.style.display = (role === "admin" || role === "leatv") ? "inline-block" : "none";
-}
+    // Changer bouton admin en fonction du rôle
+    const adminBtn = document.getElementById("adminBtn");
+    if (adminBtn) {
+      adminBtn.style.display = (role === "admin" || role === "leatv") ? "inline-block" : "none";
+    }
+
     closeModal("loginModal");
-    editUnlocked = !editUnlocked;
-    document.getElementById("authBtn").textContent = editUnlocked ? "🚪 Déconnexion" : "🔒 Modifier le planning";
-}
+    editUnlocked = true;
+    document.getElementById("authBtn").textContent = "🚪 Déconnexion";
 
-    alert(editUnlocked ? "🔓 Accès débloqué !" : "🌙 Déconnectée. À bientôt Léa !");
+    alert("🔓 Accès débloqué !");
     failedAttempts = 0;
   } else {
     failedAttempts++;
