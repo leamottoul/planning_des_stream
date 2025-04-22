@@ -412,8 +412,8 @@ function checkSecretWord() {
       <option value="20h00">20h00</option>
       <option value="--h--">--h--</option>
     </select>
-    <button onclick="saveEdit()">💾 Enregistrer</button>
-    <button onclick="deleteDay()">🗑️ Supprimer</button>
+    <button onclick="saveEdit()">💾</button>
+    <button onclick="deleteDay()">🗑️</button>
   </div>
 </div>
 <!-- Popup Paramètres -->
@@ -462,18 +462,21 @@ function checkSecretWord() {
 
   <button onclick="saveAdminSettings()"
           style="padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
-    💾 Enregistrer les réglages
+    💾
   </button>
-</div>
-
-    <div id="tabSettings" class="admin-tab" style="display:none;">
+<div id="tabSettings" class="admin-tab" style="display:none;">
   <label>🌟 Étoiles magiques forcées</label>
   <select id="adminStarsMode" style="width: 100%; padding:6px; border-radius:8px; margin-bottom:10px;">
     <option value="auto">Auto (chaque utilisateur)</option>
     <option value="on">Forcé : Activées</option>
     <option value="off">Forcé : Désactivées</option>
   </select>
+
+  <button onclick="saveAdminSettings()" style="margin-top: 10px; padding: 10px 20px; background: #6c4db4; color: white; border: none; border-radius: 10px; cursor: pointer;">
+    💾
+  </button>
 </div>
+
 
     <div id="tabLog" class="admin-tab" style="display:none;">Contenu Historique (à venir)</div>
 
