@@ -642,48 +642,6 @@ function validateLogin() {
   if (users[user] && users[user].pass === pass) {
     const role = users[user].role;
     window.connectedUser = { name: user, role };
-    editUnlocked = true;
-
-    closeModal("loginModal");
-    document.getElementById("authBtn").textContent = "🚪 Déconnexion";
-
-    const adminBtn = document.getElementById("adminBtn");
-    if (adminBtn) {
-      adminBtn.style.display = (role === "admin" || role === "leatv") ? "inline-block" : "none";
-    }
-
-    alert("🔓 Accès débloqué !");
-
-    // 📝 Log de la connexion dans l'historique
-    const logEntry = {
-      user: user,
-      role: role,
-      date: new Date().toLocaleDateString("fr-FR"),
-      time: new Date().toLocaleTimeString("fr-FR"),
-      changes: "Connexion réussie"
-    };
-    db.collection("settings").doc("history").collection("logs").add(logEntry).then(() => {
-      loadAdminLogs();
-    });
-
-    failedAttempts = 0;
-
-  } else {
-    failedAttempts++;
-    if (failedAttempts >= 3) {
-      lockoutUntil = Date.now() + 10 * 60 * 1000;
-      alert("Trop de tentatives ! Réessaie dans 10 minutes.");
-      closeModal("loginModal");
-    } else {
-      alert("Identifiants incorrects !");
-    }
-  }
-}
-
-
-  if (users[user] && users[user].pass === pass) {
-    const role = users[user].role;
-    window.connectedUser = { name: user, role };
 
     // Changer bouton admin en fonction du rôle
     const adminBtn = document.getElementById("adminBtn");
