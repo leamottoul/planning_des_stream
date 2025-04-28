@@ -7,7 +7,7 @@ const users = [
   {
     username: "leatv",
     password: "9b04e2a1864843df1483760e33b17e973bd828515ecb99980005b81ed989ba39",
-    role: "leatv"
+    role: "admin"
   },
   {
     username: "modoco",
