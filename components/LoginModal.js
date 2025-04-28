@@ -33,9 +33,17 @@ const LoginModal = {
   watch: {
     modelValue(newValue) {
       this.open = newValue
+      this.username = ""
+      this.password = ""
+      this.error = false
+      this.errorMessage = ""
     },
     open(newValue) {
       this.$emit('update:modelValue', newValue)
+      this.username = ""
+      this.password = ""
+      this.error = false
+      this.errorMessage = ""
     }
   },
   methods: {
